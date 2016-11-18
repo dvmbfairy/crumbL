@@ -1,0 +1,303 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage{geometry}
+\geometry{margin=1 in}
+\usepackage[T1]{fontenc}
+\usepackage[]{amsmath}
+\usepackage{longtable}
+\usepackage{semantic}
+\title{crumbL}
+\author{Raymond Chee, Chris Denny, Mark Ebbole, Carolyn Tran, Sarah Wang, Angela Xie}
+\date{Thursday December 1}
+\begin{document}
+
+% introduction section about what we're trying to accomplish (make L imperative with type inferencing)
+% also have a section about types
+% for each section, explain why we chose to do certain things that are different from L
+
+
+
+\section{Operational Semantics}
+
+\subsection{Environments}
+
+$E$ - a mapping from identifiers to values
+
+$F$ - a mapping from identifiers to function definitions. 
+
+A function definition has three fields: 
+
+prog: a statement of the form $P$ (see context free grammar)
+
+r: a statement of the form $e$ that comes after the ret keyword.
+
+p\_list: a list of identifiers that make up the parameter list of the function definition.
+
+
+\subsection{The Fundamental crumbL Statement}
+\inference{E,F |- S_1 : E^\prime, F^\prime \\
+		  E^\prime, F^\prime |- S_2 : E^{\prime\prime}, F^{\prime\prime}}
+		  {E,F |- S_1\ S_2 : E^{\prime\prime},F^{\prime\prime}}
+
+\ 
+
+\ 
+
+
+\subsection{Constants}
+
+
+
+\inference{}{E,F |- \text{INT\_CONST} : \text{INT\_CONST} }
+
+\
+
+
+\inference{}{E,F |- \text{STRING\_CONST} : \text{STRING\_CONST} }
+
+\ 
+
+\inference{}{E,F |- \text{Nil} : \text{Nil} }
+
+
+
+\subsection{Arithmetic}
+
+
+\inference{E,F |- e_1 : i_1 \\
+           E,F |- e_2 : i_2}
+		   {E,F |- e_1 \oplus e_2 : i_1 \oplus i_2 }
+
+\
+		   
+where $\oplus \in \{+, -, *, \%\}$
+
+\
+
+\
+
+\inference{E,F |- e_1 : i_1 \\
+           E,F |- e_2 : i_2 \\
+           i_2 \neq 0}
+		   {E,F |- e_1 / e_2 : i_1 / i_2 }
+		   
+\
+
+\
+
+\inference{E,F |- e_1 : s_1 \\
+           E,F |- e_2 : s_2}
+		   {E,F |- e_1::e_2 : s_1s_2 }
+		   
+		   
+\subsection{Lists}
+		   
+\inference{E,F |- e_1 : v_1 \\
+           E,F |- e_2 : v_2 \ \text{(not Nil)}}
+		   {E,F |- e_1@e_2 : [v_1, v_2] }
+		   
+
+\
+
+\
+
+\inference{E,F |- e_1 : v_1 \\
+           E,F |- e_2 : \text{Nil} }
+		   {E,F |- e_1@e_2 : v_1 }
+		   
+\
+
+\
+
+\inference{E,F |- e : [v_1, v_2] }
+		   {E,F |- !e : v_1 }
+		   
+		   
+\
+
+\
+
+\inference{E,F |- e : [v_1, v_2] }
+		   {E,F |- \#e : v_2 }
+		   
+\
+
+\
+
+\inference{E,F |- e : v_1 \text{(not a list)} }
+		   {E,F |- !e : v_1 }
+		   
+		   
+\
+
+\
+
+\inference{E,F |- e : v_1 \text{(not a list)} }
+		   {E,F |- \#e : Nil }
+		   
+	
+	
+
+\subsection{Boolean Logic}
+
+\inference{E,F |- e_1 : i_1 \\
+           E,F |- e_2 : i_2}
+           {E,F |- e_1 \odot e_2 : i_1 \odot i_2}
+           
+           
+where $\odot \in \{<, >, < =, >=, ==, !=, and, or\}$
+
+
+
+
+\
+
+\
+
+
+\inference{E,F |- e_1 : \text{nonzero int}}
+           {E,F |- \text{not } e_1 : False}
+           
+\
+
+\
+
+   
+\inference{E,F |- e_1 : 0}
+           {E,F |- \text{not } e_1 : True}
+		   
+\
+
+\
+
+
+
+\inference{E,F |- e_1 : Nil}
+           {E,F |- \text{isNil } e_1 : True}
+		   
+\
+
+\
+
+
+\inference{E,F |- e_1 : \text{not Nil}}
+           {E,F |- \text{isNil } e_1 : False}
+		   
+\
+
+\
+
+
+\subsection{Conditional Statements}
+
+
+
+\inference{E,F |- C: True  \\
+		   E,F |- S_1 : E^\prime, F^\prime}
+		   {E,F |- \text{if }(C) \text{ then } S_1 \text{ else } S_2 \text{ fi } : E^\prime, F^\prime}
+		   
+\ 
+
+\ 
+
+\inference{E,F |- C: False  \\
+		   E,F |- S_2 : E^\prime, F^\prime}
+		   {E,F |- \text{if }(C) \text{ then } S_1 \text{ else } S_2 \text{ fi } : E^\prime, F^\prime}
+		   
+\ 
+
+\ 
+
+
+\inference{E,F |- C: False }
+		   {E,F |- \text{while}(C) \text{ do } S \text{ od } : E, F}
+		   
+		   
+\
+
+\
+ 
+
+
+\inference{E,F |- C: True \\
+		   E,F |- S : E^\prime, F \\
+		   E^\prime, F |- \text{while}(C) \text{ do } S \text{ od } : E^{\prime\prime}, F}
+		   {E,F |- \text{while}(C) \text{ do } S \text{ od } : E^{\prime\prime}, F}	  
+		   
+Note: Under this rule, the statement S must not change the function environment .
+
+
+\ 
+
+\
+
+\subsection{Identifiers and Functions}
+
+\inference{E,F |- e: v \\
+		   E(id) \text{ does not exist}}
+		   {E,F |- id = e; : E[id \leftarrow v], F}
+		   
+		   
+\ 
+
+\ 
+
+\inference{E,F |- v = E[id]}
+		   {E,F |- id : v}
+		   
+\
+
+\
+
+		   
+\inference{fentry = \{\text{prog: P, r: e, p\_list: p\_list} \} \\
+		   F^\prime = F[\textbf{fname} \leftarrow fentry]  }
+{E,F |- \text{func } \textbf{fname}(\text{p\_list})\ P\ \text{ret } e;\ \text{cnuf } : E, F^\prime}
+		   
+\
+
+\
+
+\inference{fentry = F[\textbf{fname}] \\
+           E^\prime = \text{apply}(fentry.\text{p\_list},\ \text{call\_list}) \\
+           p = fentry.\text{prog} \\
+           E^\prime, F |- p : E^{\prime\prime} \\
+           E^{\prime\prime}, F |- fentry.\text{r} : v }
+{E,F |- \textbf{fname}(\text{call\_list}) : v}
+
+
+\
+
+Note: apply is just an operational semantics subroutine to construct a new environment for a called function, and is not useable from source code.
+
+
+\
+
+\inference{E,F |- \text{p\_list} = [p_1, R_1] \\
+           E,F |- \text{call\_list} = [e_1, R_2] \\
+           E,F |- e_1 : v_1 \\
+           E,F |- \text{apply}(R_1, R_2) : E^\prime \\
+           E^{\prime\prime} = E^\prime[p_1 \leftarrow v_1]}
+           {E,F |- \text{apply}(\text{p\_list}, \text{call\_list}) : E^{\prime\prime}}
+           
+           
+\
+
+\
+
+\inference{}{\text{apply}(\epsilon, \epsilon) : \emptyset}
+		   
+		   
+		   
+\subsection{I/O}
+
+
+\inference{E,F |- e: v}
+		   {E,F |- \text{print}(e); : E,F, \text{ print out }v }
+		   
+\
+
+\
+
+
+
+\end{document}
