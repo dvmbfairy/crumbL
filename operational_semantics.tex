@@ -91,7 +91,7 @@ where $\oplus \in \{+, -, *, \%\}$
 		   
 \subsection{Lists}
 		   
-\inference{E,F |- e_1 : v_1 \\
+\inference{E,F |- e_1 : v_1 \text{(not a list)}\\
            E,F |- e_2 : v_2 \ \text{(not Nil)}}
 		   {E,F |- e_1@e_2 : [v_1, v_2] }
 		   
@@ -100,7 +100,7 @@ where $\oplus \in \{+, -, *, \%\}$
 
 \
 
-\inference{E,F |- e_1 : v_1 \\
+\inference{E,F |- e_1 : v_1 \text{(not a list)} \\
            E,F |- e_2 : \text{Nil} }
 		   {E,F |- e_1@e_2 : v_1 }
 		   
@@ -155,7 +155,7 @@ where $\odot \in \{<, >, < =, >=, ==, !=, and, or\}$
 
 
 \inference{E,F |- e_1 : \text{nonzero int}}
-           {E,F |- \text{not } e_1 : False}
+           {E,F |- \text{not } e_1 : 0}
            
 \
 
@@ -163,7 +163,7 @@ where $\odot \in \{<, >, < =, >=, ==, !=, and, or\}$
 
    
 \inference{E,F |- e_1 : 0}
-           {E,F |- \text{not } e_1 : True}
+           {E,F |- \text{not } e_1 : 1}
 		   
 \
 
@@ -172,7 +172,7 @@ where $\odot \in \{<, >, < =, >=, ==, !=, and, or\}$
 
 
 \inference{E,F |- e_1 : Nil}
-           {E,F |- \text{isNil } e_1 : True}
+           {E,F |- \text{isNil } e_1 : 1}
 		   
 \
 
@@ -180,7 +180,7 @@ where $\odot \in \{<, >, < =, >=, ==, !=, and, or\}$
 
 
 \inference{E,F |- e_1 : \text{not Nil}}
-           {E,F |- \text{isNil } e_1 : False}
+           {E,F |- \text{isNil } e_1 : 0}
 		   
 \
 
@@ -191,7 +191,7 @@ where $\odot \in \{<, >, < =, >=, ==, !=, and, or\}$
 
 
 
-\inference{E,F |- C: True  \\
+\inference{E,F |- C: \text{nonzero int}  \\
 		   E,F |- S_1 : E^\prime, F^\prime}
 		   {E,F |- \text{if }(C) \text{ then } S_1 \text{ else } S_2 \text{ fi } : E^\prime, F^\prime}
 		   
@@ -199,7 +199,7 @@ where $\odot \in \{<, >, < =, >=, ==, !=, and, or\}$
 
 \ 
 
-\inference{E,F |- C: False  \\
+\inference{E,F |- C: 0  \\
 		   E,F |- S_2 : E^\prime, F^\prime}
 		   {E,F |- \text{if }(C) \text{ then } S_1 \text{ else } S_2 \text{ fi } : E^\prime, F^\prime}
 		   
@@ -208,8 +208,8 @@ where $\odot \in \{<, >, < =, >=, ==, !=, and, or\}$
 \ 
 
 
-\inference{E,F |- C: False }
-		   {E,F |- \text{while}(C) \text{ do } S \text{ od } : E, F}
+\inference{E,F |- C: 0 }
+		   {E,F |- \text{while}(C) \text{ do } S \text{ ob } : E, F}
 		   
 		   
 \
@@ -218,12 +218,12 @@ where $\odot \in \{<, >, < =, >=, ==, !=, and, or\}$
  
 
 
-\inference{E,F |- C: True \\
+\inference{E,F |- C: \text{nonzero int} \\
 		   E,F |- S : E^\prime, F \\
-		   E^\prime, F |- \text{while}(C) \text{ do } S \text{ od } : E^{\prime\prime}, F}
-		   {E,F |- \text{while}(C) \text{ do } S \text{ od } : E^{\prime\prime}, F}	  
+		   E^\prime, F |- \text{while}(C) \text{ do } S \text{ ob } : E^{\prime\prime}, F}
+		   {E,F |- {while}(C) \text{ do } S \text{ od } : E^{\prime\prime}, F}	  
 		   
-Note: Under this rule, the statement S must not change the function environment .
+Note: Under this rule, the statement S must not change the function environment.
 
 
 \ 
