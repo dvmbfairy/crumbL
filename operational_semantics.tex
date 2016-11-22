@@ -232,8 +232,7 @@ Note: Under this rule, the statement S must not change the function environment.
 
 \subsection{Identifiers and Functions}
 
-\inference{E,F |- e: v \\
-		   E(id) \text{ does not exist}}
+\inference{E,F |- e: v}
 		   {E,F |- id = e; : E[id \leftarrow v], F}
 		   
 		   
@@ -298,6 +297,16 @@ Note: apply is just an operational semantics subroutine to construct a new envir
 
 \
 
+
+
+\inference{T |- e_1: \alpha_1 \\
+           T |- e_2: \alpha_2 \\
+           \alpha_2 = \alpha_1 \text{ or } \alpha_2 = \alpha_1List}
+		   {T |- e_1@e_2 : \alpha_1List}
+		   
+\
+
+\
 
 
 \end{document}
