@@ -1,0 +1,5 @@
+lexer
+lexer.yy.c
+*.o
+parser.tab.[ch]
+parser.output
