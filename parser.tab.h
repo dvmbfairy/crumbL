@@ -75,7 +75,18 @@
      TOKEN_STRING = 291,
      TOKEN_ERROR = 292,
      TOKEN_IN = 293,
-     EXPR = 294
+     EXPR = 294,
+     TOKEN_FI = 295,
+     TOKEN_FUNC = 296,
+     TOKEN_CNUF = 297,
+     TOKEN_WHILE = 298,
+     TOKEN_DO = 299,
+     TOKEN_OB = 300,
+     TOKEN_NOT = 301,
+     TOKEN_RET = 302,
+     TOKEN_ASSIGN = 303,
+     TOKEN_MODULO = 304,
+     TOKEN_SEMICOLON = 305
    };
 #endif
 

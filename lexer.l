@@ -50,7 +50,7 @@ EXCLAMATION [!]
 POUND [#]
 AT [@]
 DOT [.]
-SEMICOLON [;]
+SEMICOLON [;
  
 %x STRING
 %x COMMENT 
