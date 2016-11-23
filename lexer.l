@@ -17,7 +17,7 @@ string buffer;
 
 
 /*
- * You may want to track the comment desting depth with this variable.
+ * You may want to track the comment nesting depth with this variable.
  */
 int comment_depth = 0;
 
@@ -37,6 +37,7 @@ PLUS [+]
 MINUS [-]
 STAR "*"
 DIVIDE [/]
+MODULO [%]
 LPAREN [(]
 RPAREN [)]
 AND [&]
@@ -49,6 +50,7 @@ EXCLAMATION [!]
 POUND [#]
 AT [@]
 DOT [.]
+SEMICOLON [;]
  
 %x STRING
 %x COMMENT 
@@ -126,14 +128,6 @@ DOT [.]
     return TOKEN_COMMA;
 }
 
-readstring {
-    return TOKEN_READSTRING;
-}
-
-readint {
-    return TOKEN_READINT;
-}
-
 print {
     return TOKEN_PRINT;
 }
@@ -142,20 +136,16 @@ isnil {
     return TOKEN_ISNIL;
 }
 
-with {
-    return TOKEN_WITH;
-}
-
 nil {
     return TOKEN_NIL;
 }
 
-let {
-    return TOKEN_LET;
-}
-
 if {
     return TOKEN_IF;
+}
+
+fi {
+    return TOKEN_FI;
 }
 
 then {
@@ -166,16 +156,44 @@ else {
     return TOKEN_ELSE;
 }
 
-lambda {
-    return TOKEN_LAMBDA;
+func {
+    return TOKEN_FUNC;
 }
 
-fun {
-    return TOKEN_FUN;
+cnuf {
+    return TOKEN_CNUF;
 }
 
-in {
-    return TOKEN_IN;
+while {
+    return TOKEN_WHILE;
+}
+
+do {
+    return TOKEN_DO;
+}
+
+ob {
+    return TOKEN_OB;
+}
+
+and {
+    return TOKEN_AND;
+}
+
+or {
+    return TOKEN_OR;
+}
+
+not {
+    return TOKEN_NOT;
+}
+
+ret {
+    return TOKEN_RET;
+}
+
+{EQUALS} {
+    return TOKEN_ASSIGN;
 }
 
 {LPAREN} {
@@ -202,19 +220,15 @@ in {
     return TOKEN_DIVIDE;
 }
 
-{AND} {
-    return TOKEN_AND;
+{MODULO} {
+    return TOKEN_MODULO;
 }
 
-{OR} {
-    return TOKEN_OR;
-}
-
-{EQUALS} {
+{EQUALS}{EQUALS} {
     return TOKEN_EQ;
 }
 
-{LESS_THAN}{GREATER_THAN} {
+{EXCLAMATION}{EQUALS} {
     return TOKEN_NEQ;
 }
 
@@ -246,8 +260,8 @@ in {
     return TOKEN_CONS;
 }
 
-{DOT} {
-    return TOKEN_DOT;
+{SEMICOLON} {
+    return TOKEN_SEMICOLON;
 }
 
 {DIGIT}+ {
