@@ -10,6 +10,9 @@ default: parser
 lexer: ${OBJs}
 	${CC} ${CFLAGS} ${INC_PARAMS} ${OBJs} -o lexer -lfl
 
+lex.yy.c: lexer.l parser-defs.h
+	flex -i lexer.l
+
 parser: ${OBJs}
 	${CC} ${CFLAGS} ${INC_PARAMS} ${OBJs} -o l-type-inference -lfl
 
