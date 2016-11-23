@@ -7,9 +7,11 @@ OBJs =   parser.tab.o lex.yy.o  Expression.o SymbolTable.o frontend.o TypeInfere
 
 default: parser
 
+lexer: ${OBJs}
+	${CC} ${CFLAGS} ${INC_PARAMS} ${OBJs} -o lexer -lfl
+
 parser: ${OBJs}
 	${CC} ${CFLAGS} ${INC_PARAMS} ${OBJs} -o l-type-inference -lfl
-
 
 
 
