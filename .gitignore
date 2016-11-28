@@ -4,3 +4,4 @@ lexer.yy.c
 parser.tab.[ch]
 parser.output
 l-interpreter
+parser

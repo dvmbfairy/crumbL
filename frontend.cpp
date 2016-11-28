@@ -2,7 +2,6 @@
 #include <fstream>
 #include <sstream>
 #include "ast/expression.h"
-#include "TypeInference.h"
 
 using namespace std;
 
@@ -101,10 +100,6 @@ int main(int argc, char** argv)
 	  cout << "****************** AST ******************" << endl;
 	  cout << res_expr->to_string() << endl;
 	  cout << "*****************************************" << endl;
-  }
-
-  if(res_expr != NULL) {
-	  TypeInference ti(res_expr);
   }
 
 }
