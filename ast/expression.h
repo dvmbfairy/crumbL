@@ -6,12 +6,15 @@
 #include "AstIdentifier.h"
 #include "AstString.h"
 #include "AstInt.h"
-#include "AstIdentifierList.h"
+#include "AstParameterList.h"
+#include "AstCallList.h"
 #include "AstBranch.h"
 #include "AstAssign.h"
 #include "AstNil.h"
 #include "AstList.h"
 #include "AstUnOp.h"
+#include "AstWhile.h"
+#include "AstFunc.h"
 
 
 

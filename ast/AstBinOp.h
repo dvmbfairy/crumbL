@@ -2,8 +2,8 @@
  #define AST_BINOP_H_
  #include "Expression.h"
  
- enum binop_type {PLUS, MINUS, TIMES, DIVIDE, AND, OR, EQ, NEQ, LT, LEQ,
-	 GT, GEQ, CONS};
+ enum binop_type {PLUS, MINUS, TIMES, DIVIDE, MODULO, AND, OR, EQ, NEQ, LT, LEQ,
+	 GT, GEQ, CONS, CONCAT};
  
 
  class AstBinOp;
@@ -37,6 +37,7 @@
           case MINUS: return "-";
           case TIMES: return "*";
           case DIVIDE: return "/";
+          case MODULO: return "%";
           case AND: return "&";
           case OR: return "|";
           case EQ: return "=";
@@ -46,6 +47,7 @@
           case GT: return ">";
           case GEQ: return ">=";
           case CONS: return "@";
+          case CONCAT: return "::";
           default:
             assert(false);
         }

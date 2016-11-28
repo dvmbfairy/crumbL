@@ -17,8 +17,8 @@ AstBranch::AstBranch(Expression* pred, Expression* then_exp, Expression* else_ex
 	this->then_exp = then_exp;
 	this->else_exp = else_exp;
 
-	this->hash_c = 5* pred->get_hash() +2*then_exp->get_hash() +732*
-			else_exp->get_hash();
+	this->hash_c = 5* pred->get_hash() +2*(then_exp == NULL ? 147 : then_exp->get_hash()) +732*
+			(else_exp == NULL ? 147 : else_exp->get_hash());
 
 
 }
@@ -32,9 +32,9 @@ string AstBranch::to_string(int d)
   res +=  get_depth(d) + "Predicate:\n";
   res += pred->to_string(d+1);
   res += get_depth(d) +  "Then branch:\n";
-  res += then_exp->program_to_string(d+1);
+  res += then_exp == NULL ? "" : then_exp->program_to_string(d+1);
   res += get_depth(d) +  "Else Branch:\n";
-  res += else_exp->program_to_string(d+1);
+  res += else_exp == NULL ? "" : else_exp->program_to_string(d+1);
   return res;
 }
 

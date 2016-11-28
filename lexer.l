@@ -38,6 +38,7 @@ MINUS [-]
 STAR "*"
 DIVIDE [/]
 MODULO [%]
+CONCAT [:][:]
 LPAREN [(]
 RPAREN [)]
 AND [&]
@@ -206,6 +207,10 @@ ret {
 
 {STAR} {
     return TOKEN_TIMES;
+}
+
+{CONCAT} {
+    return TOKEN_CONCAT;
 }
 
 {PLUS} {
