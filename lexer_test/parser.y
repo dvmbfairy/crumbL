@@ -69,7 +69,7 @@ TOKEN_RET
 TOKEN_ASSIGN
 TOKEN_MODULO
 TOKEN_SEMICOLON
-
+TOKEN_LAZY
 
 
 
@@ -300,6 +300,10 @@ input TOKEN_MODULO {
 |
 input TOKEN_SEMICOLON {
     cout << "TOKEN_SEMICOLON" << endl;
+}
+|
+input TOKEN_LAZY {
+    cout << "TOKEN_LAZY" << endl;
 }
 |
 input TOKEN_ERROR

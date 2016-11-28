@@ -192,6 +192,10 @@ ret {
     return TOKEN_RET;
 }
 
+lazy {
+    return TOKEN_LAZY;
+}
+
 {EQUALS} {
     return TOKEN_ASSIGN;
 }
