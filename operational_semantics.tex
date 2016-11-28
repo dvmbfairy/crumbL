@@ -47,12 +47,12 @@ p\_list: a list of identifiers that make up the parameter list of the function d
 
 
 
-\inference{}{E,F |- \text{INT\_CONST} : \text{INT\_CONST} }
+\inference{\text{integer i}}{E,F |- \text{i} : \text{i} }
 
 \
 
 
-\inference{}{E,F |- \text{STRING\_CONST} : \text{STRING\_CONST} }
+\inference{\text{String s}}{E,F |- \text{s} : \text{s} }
 
 \ 
 
@@ -144,7 +144,64 @@ where $\oplus \in \{+, -, *, \%\}$
            {E,F |- e_1 \odot e_2 : i_1 \odot i_2}
            
            
-where $\odot \in \{<, >, < =, >=, ==, !=, and, or\}$
+where $\odot \in \{<, >, < =, >=, ==, != \}$
+
+
+\
+
+\
+
+\inference{E,F |- e_1 : \text{nonzero int} \\
+		   E,F |- e_2 : \text{nonzero int}}
+		   {E,F |- e_1 \text{ and } e_2 : 1}
+		   
+		   
+\
+
+\
+
+\inference{E,F |- e_1 : 0}
+		   {E,F |- e_1 \text{ and } e_2 : 0}
+		   
+		   
+\
+
+\
+
+\inference{E,F |- e_1 : \text{nonzero int} \\
+		   E,F |- e_2 : 0}
+		   {E,F |- e_1 \text{ and } e_2 : 0}
+		   
+		   
+		   
+		   
+
+
+
+\
+
+\
+
+\inference{E,F |- e_1 : \text{nonzero int}}
+		   {E,F |- e_1 \text{ or } e_2 : 1}
+		   
+		   
+\
+
+\
+
+\inference{E,F |- e_1 : 0 \\
+           E,F |- e_2 : 0}
+		   {E,F |- e_1 \text{ or } e_2 : 0}
+		   
+		   
+\
+
+\
+
+\inference{E,F |- e_1 : 0 \\
+           E,F |- e_2 : \text{nonzero int}}
+		   {E,F |- e_1 \text{ or } e_2 : 1}
 
 
 
@@ -221,8 +278,10 @@ where $\odot \in \{<, >, < =, >=, ==, !=, and, or\}$
 \inference{E,F |- C: \text{nonzero int} \\
 		   E,F |- S : E^\prime, F \\
 		   E^\prime, F |- \text{while}(C) \text{ do } S \text{ ob } : E^{\prime\prime}, F}
-		   {E,F |- {while}(C) \text{ do } S \text{ od } : E^{\prime\prime}, F}	  
-		   
+		   {E,F |- {while}(C) \text{ do } S \text{ ob } : E^{\prime\prime}, F}	  
+		
+\
+   
 Note: Under this rule, the statement S must not change the function environment.
 
 
@@ -240,8 +299,18 @@ Note: Under this rule, the statement S must not change the function environment.
 
 \ 
 
-\inference{E,F |- v = E[id]}
-		   {E,F |- id : v}
+
+\inference{}{E,F |- \text{lazy } id = e; : E[id \leftarrow e], F}
+		   
+		   
+\ 
+
+\ 
+
+\inference{e = E[id] \\
+           E,F |- e : v \\
+           E^\prime = E[id \leftarrow v]}
+		   {E,F |- id : v, E^\prime, F}
 		   
 \
 
@@ -276,6 +345,17 @@ Note: apply is just an operational semantics subroutine to construct a new envir
            E,F |- e_1 : v_1 \\
            E,F |- \text{apply}(R_1, R_2) : E^\prime \\
            E^{\prime\prime} = E^\prime[p_1 \leftarrow v_1]}
+           {E,F |- \text{apply}(\text{p\_list}, \text{call\_list}) : E^{\prime\prime}}
+           
+           
+\
+
+\
+
+\inference{E,F |- \text{p\_list} = [\text{lazy } p_1, R_1] \\
+           E,F |- \text{call\_list} = [e_1, R_2] \\
+           E,F |- \text{apply}(R_1, R_2) : E^\prime \\
+           E^{\prime\prime} = E^\prime[p_1 \leftarrow e_1]}
            {E,F |- \text{apply}(\text{p\_list}, \text{call\_list}) : E^{\prime\prime}}
            
            
