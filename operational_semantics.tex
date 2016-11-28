@@ -139,20 +139,35 @@ where $\oplus \in \{+, -, *, \%\}$
 
 \subsection{Boolean Logic}
 
-\inference{E,F |- e_1 : i_1 \\
-           E,F |- e_2 : i_2}
-           {E,F |- e_1 \odot e_2 : i_1 \odot i_2}
+
+\
+
+\
+
+\inference{E,F |- e_1 : v_1 \\
+           E,F |- e_2 : v_2}
+           {E,F |- e_1 \odot e_2 : v_1 \odot v_2}
            
-           
-where $\odot \in \{<, >, < =, >=, ==, != \}$
+where $v_1$ and $v_2$ are either both strings or both integers. If strings, comparisons are lexicgraphic.
+
+$\odot \in \{<, >, < =, >=, ==, != \}$
+
 
 
 \
 
 \
 
-\inference{E,F |- e_1 : \text{nonzero int} \\
-		   E,F |- e_2 : \text{nonzero int}}
+Let \textbf{False} be "", 0, or Nil.
+
+\textbf{True} is any expression that evaluates to something that is not \textbf{False}.
+
+\
+
+\
+
+\inference{E,F |- e_1 : \text{True} \\
+		   E,F |- e_2 : \text{True}}
 		   {E,F |- e_1 \text{ and } e_2 : 1}
 		   
 		   
@@ -160,7 +175,7 @@ where $\odot \in \{<, >, < =, >=, ==, != \}$
 
 \
 
-\inference{E,F |- e_1 : 0}
+\inference{E,F |- e_1 : \text{False}}
 		   {E,F |- e_1 \text{ and } e_2 : 0}
 		   
 		   
@@ -168,8 +183,8 @@ where $\odot \in \{<, >, < =, >=, ==, != \}$
 
 \
 
-\inference{E,F |- e_1 : \text{nonzero int} \\
-		   E,F |- e_2 : 0}
+\inference{E,F |- e_1 : \text{True} \\
+		   E,F |- e_2 : \text{False}}
 		   {E,F |- e_1 \text{ and } e_2 : 0}
 		   
 		   
@@ -182,7 +197,7 @@ where $\odot \in \{<, >, < =, >=, ==, != \}$
 
 \
 
-\inference{E,F |- e_1 : \text{nonzero int}}
+\inference{E,F |- e_1 : \text{True}}
 		   {E,F |- e_1 \text{ or } e_2 : 1}
 		   
 		   
@@ -190,8 +205,8 @@ where $\odot \in \{<, >, < =, >=, ==, != \}$
 
 \
 
-\inference{E,F |- e_1 : 0 \\
-           E,F |- e_2 : 0}
+\inference{E,F |- e_1 : \text{False} \\
+           E,F |- e_2 : \text{False}}
 		   {E,F |- e_1 \text{ or } e_2 : 0}
 		   
 		   
@@ -199,8 +214,8 @@ where $\odot \in \{<, >, < =, >=, ==, != \}$
 
 \
 
-\inference{E,F |- e_1 : 0 \\
-           E,F |- e_2 : \text{nonzero int}}
+\inference{E,F |- e_1 : \text{False} \\
+           E,F |- e_2 : \text{True}}
 		   {E,F |- e_1 \text{ or } e_2 : 1}
 
 
@@ -211,7 +226,7 @@ where $\odot \in \{<, >, < =, >=, ==, != \}$
 \
 
 
-\inference{E,F |- e_1 : \text{nonzero int}}
+\inference{E,F |- e_1 : \text{True}}
            {E,F |- \text{not } e_1 : 0}
            
 \
@@ -219,7 +234,7 @@ where $\odot \in \{<, >, < =, >=, ==, != \}$
 \
 
    
-\inference{E,F |- e_1 : 0}
+\inference{E,F |- e_1 : \text{False}}
            {E,F |- \text{not } e_1 : 1}
 		   
 \
@@ -248,7 +263,7 @@ where $\odot \in \{<, >, < =, >=, ==, != \}$
 
 
 
-\inference{E,F |- C: \text{nonzero int}  \\
+\inference{E,F |- C: \text{True}  \\
 		   E,F |- S_1 : E^\prime, F^\prime}
 		   {E,F |- \text{if }(C) \text{ then } S_1 \text{ else } S_2 \text{ fi } : E^\prime, F^\prime}
 		   
@@ -256,7 +271,7 @@ where $\odot \in \{<, >, < =, >=, ==, != \}$
 
 \ 
 
-\inference{E,F |- C: 0  \\
+\inference{E,F |- C: \text{False}  \\
 		   E,F |- S_2 : E^\prime, F^\prime}
 		   {E,F |- \text{if }(C) \text{ then } S_1 \text{ else } S_2 \text{ fi } : E^\prime, F^\prime}
 		   
@@ -265,7 +280,7 @@ where $\odot \in \{<, >, < =, >=, ==, != \}$
 \ 
 
 
-\inference{E,F |- C: 0 }
+\inference{E,F |- C: \text{False} }
 		   {E,F |- \text{while}(C) \text{ do } S \text{ ob } : E, F}
 		   
 		   
@@ -275,7 +290,7 @@ where $\odot \in \{<, >, < =, >=, ==, != \}$
  
 
 
-\inference{E,F |- C: \text{nonzero int} \\
+\inference{E,F |- C: \text{True} \\
 		   E,F |- S : E^\prime, F \\
 		   E^\prime, F |- \text{while}(C) \text{ do } S \text{ ob } : E^{\prime\prime}, F}
 		   {E,F |- {while}(C) \text{ do } S \text{ ob } : E^{\prime\prime}, F}	  
