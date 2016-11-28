@@ -1,22 +1,20 @@
-#ifndef AST_LET_H_
-#define AST_LET_H_
+#ifndef AST_ASSIGN_H_
+#define AST_ASSIGN_H_
 
 #include "Expression.h"
 #include "AstIdentifier.h"
 
-class AstLet:public Expression
+class AstAssign:public Expression
 {
   private:
     AstIdentifier* id;
     Expression* val;
-    Expression* body;
-    AstLet(AstIdentifier* id, Expression* val, Expression* body);
+    AstAssign(AstIdentifier* id, Expression* val);
   public:
-    static AstLet* make(AstIdentifier* id, Expression* val, Expression* body);
+    static AstAssign* make(AstIdentifier* id, Expression* val);
     virtual string to_string(int d = 0);
     virtual string to_value();
     AstIdentifier* get_id();
-    Expression* get_body();
     Expression* get_val();
     virtual Expression* substitute(Expression* e1,
     	        		  Expression* e2);
@@ -25,4 +23,4 @@ class AstLet:public Expression
     
 };
 
-#endif /* AST_LET_H_ */
+#endif /* AST_ASSIGN_H_ */

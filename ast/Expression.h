@@ -32,7 +32,7 @@
 
  enum expression_type {AST_BINOP,  AST_IDENTIFIER,
  AST_INT, AST_LAMBDA, AST_LET, AST_STRING, AST_IDENTIFIER_LIST,
- AST_EXPRESSION_LIST, AST_BRANCH, AST_NIL, AST_LIST, AST_UNOP, AST_READ};
+ AST_EXPRESSION_LIST, AST_BRANCH, AST_ASSIGN, AST_NIL, AST_LIST, AST_UNOP};
  
  string get_depth(int d);
  string int_to_string(long i);
@@ -42,6 +42,9 @@
  
  class Expression
  {
+
+   private:
+     Expression* next_exp = NULL;
     
    protected:
      expression_type et;
@@ -54,13 +57,16 @@
    public:
       expression_type get_type() const;
       virtual string to_string(int depth = 0) = 0;
+      string program_to_string(int depth = 0);
       virtual string to_value();
       virtual Expression* substitute(Expression* e1,
     		  Expression* e2) = 0;
       virtual bool operator==(const Expression& other) = 0;
+      virtual ~Expression() {}
 
       size_t get_hash() {return hash_c;};
-     
+      Expression* get_next_exp() const;
+      void set_next_exp(Expression* next);
  };
  
  #endif /* EXPRESSION_H_ */

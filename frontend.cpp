@@ -96,9 +96,9 @@ int main(int argc, char** argv)
   }  
   parse(res, report_error);
   
-  if(print_ast && res_expr != NULL) {
+  if(print_ast) {
 	  cout << "****************** AST ******************" << endl;
-	  cout << res_expr->to_string() << endl;
+	  cout << (res_expr == NULL ? "EMPTY PROGRAM" : res_expr->program_to_string()) << endl;
 	  cout << "*****************************************" << endl;
   }
 
