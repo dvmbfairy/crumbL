@@ -81,7 +81,9 @@ TOKEN_ERROR
 %%
 
 
-program: %empty {}
+program: %empty {
+  $$ = NULL;
+}
 |
 program statement
 {
@@ -89,16 +91,31 @@ program statement
   Expression* next = $2;
   if (first == NULL) {
     res_expr = $2;
+    $$ = $2;
   } else {
-    first -> set_next_exp(next);
+    Expression* last = first;
+    while (last -> get_next_exp() != NULL) {
+      last = last -> get_next_exp();
+    }
+    last -> set_next_exp(next);
+    $$ = $1;
   }
-  $$ = $2;
 }
 
 statement:
 TOKEN_IDENTIFIER TOKEN_ASSIGN expression TOKEN_SEMICOLON
 {
   $$ = AstAssign::make(getIdentifier($1), $3);
+}
+|
+TOKEN_PRINT TOKEN_LPAREN expression TOKEN_RPAREN TOKEN_SEMICOLON
+{
+  $$ = AstUnOp::make(PRINT, $3);
+}
+|
+TOKEN_IF TOKEN_LPAREN conditional TOKEN_RPAREN TOKEN_THEN program TOKEN_ELSE program TOKEN_FI
+{
+  $$ = AstBranch::make($3, $6, $8);
 }
 
 expression: TOKEN_INT 
@@ -134,4 +151,9 @@ TOKEN_ERROR
    if(lexeme != "") error += lexeme;
    yyerror(error.c_str());
    YYERROR;
+}
+
+conditional: expression TOKEN_LT expression
+{
+  $$ = AstBinOp::make(LT, $1, $3);
 }
