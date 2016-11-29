@@ -2,7 +2,7 @@
  #define AST_UNOP_H_
  #include "Expression.h"
  
- enum unop_type {HD, TL, ISNIL, PRINT, NOT};
+ enum unop_type {HD, TL, ISNIL, PRINT, NOT, NEGATE};
  
  class AstUnOp;
 
@@ -34,6 +34,7 @@
           case ISNIL: return "IsNil";
           case PRINT: return "print";
           case NOT: return "not";
+          case NEGATE: return "-";
           default:
             assert(false);
         }

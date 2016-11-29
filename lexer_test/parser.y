@@ -33,6 +33,7 @@ TOKEN_NIL
 TOKEN_DOT 
 TOKEN_WITH 
 TOKEN_LET 
+TOKEN_CONCAT
 TOKEN_PLUS 
 TOKEN_MINUS 
 TOKEN_IDENTIFIER 
@@ -135,6 +136,12 @@ input TOKEN_LET
 {
 	cout << "TOKEN_LET" << endl;
 }
+|
+input TOKEN_CONCAT
+      {
+      cout << "TOKEN_CONCAT" << endl;
+      }
+
 |
 input TOKEN_PLUS
       {

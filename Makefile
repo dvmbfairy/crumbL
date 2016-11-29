@@ -3,13 +3,13 @@ CFLAGS = -g -Wall -std=c++0x
 INC=-. ./ast
 INC_PARAMS=$(foreach d, $(INC), -I$d)
 
-OBJs =   parser.tab.o lex.yy.o Expression.o SymbolTable.o frontend.o Evaluator.o AstNil.o AstList.o AstUnOp.o AstBranch.o AstFunc.o AstWhile.o AstAssign.o AstCallList.o AstParameterList.o AstBinOp.o  AstIdentifier.o AstInt.o AstString.o
+OBJs =   parser.tab.o lex.yy.o Expression.o SymbolTable.o frontend.o Evaluator.o AstNil.o AstList.o AstUnOp.o AstBranch.o AstFunctionCall.o AstFunc.o AstWhile.o AstAssign.o AstCallList.o AstParameterList.o AstBinOp.o  AstIdentifier.o AstInt.o AstString.o
 
 
 default: lexer parser interpreter
 
 lexer: ${OBJs}
-	${CC} ${CFLAGS} ${INC_PARAMS} ${OBJs} -o lexer -lfl
+	cp lexer.l lexer_test/lexer.l && cd lexer_test && make && cp lexer ../
 
 lex.yy.c: lexer.l parser-defs.h
 	flex -i lexer.l
@@ -32,7 +32,10 @@ SymbolTable.o:	SymbolTable.cpp
 Expression.o:	ast/*.h ast/*.cpp #ast/Expression.cpp ast/Expression.h ast/AstString.cpp ast/AstString.h
 	${CC} ${CFLAGS} ${INC_PARAMS} -c ast/*.cpp 
 
-tp:
+tl: lexer
+	./lexer test.L
+
+tp: parser
 	./parser -ast test.L
 
 clean:
