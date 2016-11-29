@@ -17,8 +17,8 @@ AstAssign::AstAssign(AstIdentifier* id, Expression* val, bool lazy)
 
 string AstAssign::to_string(int d)
 {
-  string res =  get_depth(d) + (lazy ? "LAZY ASSIGN:" : "ASSIGN:");
-  res += id->to_string(d+1);
+  string res =  get_depth(d) + (lazy ? "LAZY ASSIGN: " : "ASSIGN: ");
+  res += id->to_value() + "\n";
   res +=  get_depth(d) + "VAL:\n";
   res +=  val->to_string(d+1);
   return res;

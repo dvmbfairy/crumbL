@@ -151,7 +151,7 @@ TOKEN_WHILE TOKEN_LPAREN expression TOKEN_RPAREN TOKEN_DO program TOKEN_OB
   $$ = AstWhile::make($3, $6);
   // if the first statement in the program is this while loop, then the inner
   // program is parsed first, so the resulting expression should be this loop
-if (res_expr == $6) {
+  if (res_expr == $6) {
     res_expr = $$;
   }
 }

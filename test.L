@@ -1,6 +1,6 @@
 lazy x = 100 * 100;
 
-func foo(a, b, lazy c, lazy a)
+func foo(a, b, lazy c, lazy d)
 print(x);
 if (3 * 100 > 2) then
 lazy y = 100;
