@@ -1,26 +1,15 @@
-
-func foo()
-	x = 1 + 1;
-	ret x;
+func factorial(x)
+	print(x);
+	if(x == 0) then
+		y = 1;
+	else
+		y = x*factorial(x-1);
+	fi
+	ret y;
 cnuf
 
 
-y = foo();
+z = factorial(3);
 
 
-print(y);
-
-
-
-func abc(x, y, z)
-	a = x + y + z;
-	ret a;
-cnuf
-
-
-
-y = abc(1,2,3);
-print(y);
-
-print("this will produce a runtime error");
-y = abc(1);
+print("factorial of 3: "::z);

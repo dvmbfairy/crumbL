@@ -98,7 +98,7 @@ Expression* Evaluator::eval_binop(AstBinOp* b)
 		report_error(b, "Binops @, and, and or are the only legal binops for lists");
 	}
 
-	if(e1->get_type() != e2->get_type()) {
+	if(e1->get_type() != e2->get_type() && b->get_binop_type() != CONCAT) {
 		report_error(b, "Binop can only be applied to expressions of same type");
 	}
 
@@ -106,11 +106,6 @@ Expression* Evaluator::eval_binop(AstBinOp* b)
 	if(e1->get_type() == AST_STRING && e2->get_type() == AST_STRING && (t == PLUS || t == MINUS || t == TIMES || t == DIVIDE || t == MODULO)) {
 
 		report_error(b, "Binop " + AstBinOp::binop_type_to_string(t) + " cannot be applied to strings");
-	}
-
-	if(e1->get_type() == AST_INT && e2->get_type() == AST_INT && t == CONCAT) {
-
-		report_error(b, "Binop " + AstBinOp::binop_type_to_string(t) + " cannot be applied to ints");
 	}
 
 	if(e1->get_type() == AST_NIL || e2->get_type() == AST_NIL) {
@@ -144,9 +139,26 @@ Expression* Evaluator::eval_binop(AstBinOp* b)
 		return AstInt::make(i1->get_int() % i2->get_int());
 	}
 	else if(b->get_binop_type() == CONCAT) {
-		AstString* i1 = static_cast<AstString*>(e1);
-		AstString* i2 = static_cast<AstString*>(e2);
-		return AstString::make(i1->get_string() + i2->get_string());
+		string first;
+		string second;
+		if(e1->get_type() == AST_INT) {
+			AstInt* i1 = static_cast<AstInt*>(e1);
+			long int a = i1->get_int();
+			first = to_string(a);
+		} else {
+			AstString* i1 = static_cast<AstString*>(e1);
+			first = i1->get_string();
+		}
+		
+		if(e2->get_type() == AST_INT) {
+			AstInt* i2 = static_cast<AstInt*>(e2);
+			long int a = i2->get_int();
+			second = to_string(a);
+		} else {
+			AstString* i2 = static_cast<AstString*>(e2);
+			second = i2->get_string();
+		}
+		return AstString::make(first + second);
 	}
 
 
