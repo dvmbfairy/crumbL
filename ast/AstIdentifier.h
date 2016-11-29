@@ -6,17 +6,15 @@
  {
    private:
      string id;
-     AstIdentifier(const string & id);
+     bool lazy;
+     AstIdentifier(const string & id, bool lazy);
    public:
-    static AstIdentifier* make(const string & id);
+    static AstIdentifier* make(const string & id, bool lazy);
     virtual string to_string(int d = 0);
     virtual string to_value();
     const string & get_id();
-	virtual Expression* substitute(Expression* e1,
-	        		  Expression* e2);
-	virtual bool operator==(const Expression& other);
-
-    
+  	virtual Expression* substitute(Expression* e1, Expression* e2);
+  	virtual bool operator==(const Expression& other);
  };
  
  

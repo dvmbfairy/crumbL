@@ -1,3 +1,5 @@
-(* comment *)
-print(-(3 * 100 + 4 % 5));
--x = 5;
+func foo(a, lazy b, c)
+x = 1 + 2;
+ret x;
+cnuf
+lazy a = foo(1, 2, 4);
