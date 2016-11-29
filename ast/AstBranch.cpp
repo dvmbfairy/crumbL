@@ -3,10 +3,7 @@
 AstBranch* AstBranch::make(Expression* pred, Expression* then_exp,
 		Expression* else_exp)
 {
-	AstBranch* t = new AstBranch(pred, then_exp, else_exp);
-	Expression* res = get_exp(t);
-	assert(res->get_type() == AST_BRANCH);
-	return static_cast<AstBranch*>(res);
+	return new AstBranch(pred, then_exp, else_exp);
 }
 
 
@@ -29,11 +26,11 @@ AstBranch::AstBranch(Expression* pred, Expression* then_exp, Expression* else_ex
 string AstBranch::to_string(int d)
 {
   string res =  get_depth(d) + "BRANCH""\n";
-  res +=  get_depth(d) + "Predicate:\n";
+  res +=  get_depth(d) + "PREDICATE:\n";
   res += pred->to_string(d+1);
-  res += get_depth(d) +  "Then branch:\n";
+  res += get_depth(d) +  "THEN BRANCH:\n";
   res += then_exp == NULL ? "" : then_exp->program_to_string(d+1);
-  res += get_depth(d) +  "Else Branch:\n";
+  res += get_depth(d) +  "ELSE BRANCH:\n";
   res += else_exp == NULL ? "" : else_exp->program_to_string(d+1);
   return res;
 }

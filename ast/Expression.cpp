@@ -50,7 +50,7 @@ string Expression::program_to_string(int depth)
 	Expression* cur_exp = this;
 	string res;
 	while (cur_exp != NULL) {
-		res += cur_exp->to_string(depth);
+		res += cur_exp->to_string(depth) + '\n';
 		cur_exp = cur_exp->next_exp;
 	}
 	return res;

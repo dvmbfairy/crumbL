@@ -2,10 +2,7 @@
 
 AstWhile* AstWhile::make(Expression* pred, Expression* do_exp)
 {
-	AstWhile* t = new AstWhile(pred, do_exp);
-	Expression* res = get_exp(t);
-	assert(res->get_type() == AST_WHILE);
-	return static_cast<AstWhile*>(res);
+	return new AstWhile(pred, do_exp);
 }
 
 

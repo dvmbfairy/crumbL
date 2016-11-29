@@ -51,7 +51,7 @@ AstCallList::AstCallList(vector<Expression*> & exprs)
 
 string AstCallList::to_string(int d)
 {
-	  string res =  get_depth(d) + "ID LIST\n";
+	  string res =  get_depth(d) + "CALL LIST:\n";
 	  for(vector<Expression*>::iterator it = exprs.begin(); it != exprs.end(); it++)
 	  {
 	      res += (*it)->to_string(d+1);

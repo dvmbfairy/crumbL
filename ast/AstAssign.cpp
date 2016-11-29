@@ -2,10 +2,7 @@
 
 AstAssign* AstAssign::make(AstIdentifier* id, Expression* val)
 {
-	AstAssign* l = new AstAssign(id, val);
-	Expression* res = get_exp(l);
-	assert(res->get_type() == AST_ASSIGN);
-	return static_cast<AstAssign*>(res);
+	return new AstAssign(id, val);
 }
 
 
@@ -19,8 +16,9 @@ AstAssign::AstAssign(AstIdentifier* id, Expression* val)
 
 string AstAssign::to_string(int d)
 {
-  string res =  get_depth(d) + "Assign " + id->get_id() + "\n";
-  res +=  get_depth(d) + "VAL\n";
+  string res =  get_depth(d) + "ASSIGN:";
+  res += id->to_string(d+1);
+  res +=  get_depth(d) + "VAL:\n";
   res +=  val->to_string(d+1);
   return res;
 }

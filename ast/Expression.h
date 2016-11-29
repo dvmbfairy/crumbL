@@ -6,7 +6,7 @@
  #include <map>
  #include <set>
  #include <unordered_set>
-#include <iostream>
+ #include <iostream>
  #include <assert.h>
 
  
@@ -30,9 +30,9 @@
  }
  using namespace __gnu_cxx;
 
- enum expression_type {AST_BINOP,  AST_IDENTIFIER,
- AST_INT, AST_LAMBDA, AST_LET, AST_STRING, AST_PARAMETER_LIST,
- AST_CALL_LIST, AST_BRANCH, AST_ASSIGN, AST_NIL, AST_LIST, AST_UNOP, AST_WHILE, AST_FUNC};
+ enum expression_type {AST_BINOP,  AST_IDENTIFIER, AST_INT, AST_LAMBDA, AST_LET, AST_STRING, 
+  AST_PARAMETER_LIST, AST_CALL_LIST, AST_BRANCH, AST_ASSIGN, AST_NIL, AST_LIST, AST_UNOP, 
+  AST_WHILE, AST_FUNC, AST_FUNCTION_CALL};
  
  string get_depth(int d);
  string int_to_string(long i);
@@ -60,7 +60,7 @@
       string program_to_string(int depth = 0);
       virtual string to_value();
       virtual Expression* substitute(Expression* e1,
-    		  Expression* e2) = 0;
+                  Expression* e2) = 0;
       virtual bool operator==(const Expression& other) = 0;
       virtual ~Expression() {}
 

@@ -20,13 +20,6 @@ AstIdentifier* getIdentifier(Expression* token)
   return AstIdentifier::make(lexeme);
 }
 
-AstFunc* getFunc(Expression* formal, Expression* body)
-{
-  assert(formal->get_type() == AST_PARAMETER_LIST);
-  AstParameterList* list = static_cast<AstParameterList*>(formal);
-  return AstFunc::make(list, body);
-}
-
 %}
 /* BISON Declarations */
 %token 
@@ -70,6 +63,7 @@ TOKEN_AND
 TOKEN_OR
 TOKEN_ISNIL
 TOKEN_ERROR
+TOKEN_LAZY
 
 
 
@@ -97,8 +91,11 @@ program statement
   Expression* first = $1;
   Expression* next = $2;
   if (first == NULL) {
-    res_expr = $2;
-    $$ = $2;
+    // the first expression is the first expression
+    if (res_expr == NULL) {
+      res_expr = next;
+    }
+    $$ = next;
   } else {
     Expression* last = first;
     while (last -> get_next_exp() != NULL) {
@@ -121,16 +118,39 @@ TOKEN_PRINT TOKEN_LPAREN expression TOKEN_RPAREN TOKEN_SEMICOLON
   $$ = AstUnOp::make(PRINT, $3);
 }
 |
-TOKEN_IF TOKEN_LPAREN conditional TOKEN_RPAREN TOKEN_THEN program TOKEN_ELSE program TOKEN_FI
+TOKEN_IF TOKEN_LPAREN expression TOKEN_RPAREN TOKEN_THEN program TOKEN_ELSE program TOKEN_FI
 {
   $$ = AstBranch::make($3, $6, $8);
+  // if the first statement in the program is an if statement, then the inner
+  // programs are parsed first, so the resulting expression should be this if
+  // statement
+  if (res_expr == $6 || res_expr == $8) {
+    res_expr = $$;
+  }
 }
 |
-TOKEN_WHILE TOKEN_LPAREN conditional TOKEN_RPAREN TOKEN_DO program TOKEN_OB
+TOKEN_WHILE TOKEN_LPAREN expression TOKEN_RPAREN TOKEN_DO program TOKEN_OB
 {
   $$ = AstWhile::make($3, $6);
+  // if the first statement in the program is this while loop, then the inner
+  // program is parsed first, so the resulting expression should be this loop
+if (res_expr == $6) {
+    res_expr = $$;
+  }
 }
-
+|
+TOKEN_FUNC TOKEN_IDENTIFIER TOKEN_LPAREN parameter_list TOKEN_RPAREN program TOKEN_RET expression TOKEN_SEMICOLON TOKEN_CNUF
+{
+  assert($4->get_type() == AST_PARAMETER_LIST);
+  AstParameterList* list = static_cast<AstParameterList*>($4);
+  $$ = AstFunc::make(getIdentifier($2), list, $6, $8);
+  // if the first statement in the program is this function definition, then
+  // the inner program is parsed first, so the resulting expression should be
+  // this statement
+  if (res_expr == $6) {
+    res_expr = $$;
+  }
+}
 
 
 expression:
@@ -213,9 +233,7 @@ TOKEN_ERROR
    yyerror(error.c_str());
    YYERROR;
 }
-
-
-conditional:
+|
 expression TOKEN_EQ expression 
 {
   $$ = AstBinOp::make(EQ, $1, $3);
@@ -246,17 +264,60 @@ expression TOKEN_GEQ expression
   $$ = AstBinOp::make(GEQ, $1, $3);
 }
 |
-TOKEN_NOT conditional
+TOKEN_NOT expression
 {
   $$ = AstUnOp::make(NOT, $2);
 }
 |
-conditional TOKEN_AND conditional 
+expression TOKEN_AND expression 
 {
   $$ = AstBinOp::make(AND, $1, $3);
 }
 |
-conditional TOKEN_OR conditional 
+expression TOKEN_OR expression 
 {
   $$ = AstBinOp::make(OR, $1, $3);
+}
+|
+TOKEN_IDENTIFIER TOKEN_LPAREN call_list TOKEN_RPAREN
+{
+  Expression* e = $3;
+  assert(e->get_type() == AST_CALL_LIST);
+  AstCallList* list = static_cast<AstCallList*>(e);
+  $$ = AstFunctionCall::make(getIdentifier($1), list);
+}
+
+
+parameter_list: %empty {
+  $$ = AstParameterList::make();
+}
+|
+TOKEN_IDENTIFIER
+{
+  $$ = AstParameterList::make(getIdentifier($1));
+}
+|
+parameter_list TOKEN_COMMA TOKEN_IDENTIFIER
+{
+  Expression* e = $1;
+  assert(e->get_type() == AST_PARAMETER_LIST);
+  AstParameterList* list = static_cast<AstParameterList*>(e);
+  $$ = list->append_id(getIdentifier($3));
+} 
+
+call_list: %empty {
+  $$ = AstCallList::make();
+}
+|
+expression
+{
+  $$ = AstCallList::make($1);
+}
+|
+call_list TOKEN_COMMA expression
+{
+  Expression* e = $1;
+  assert(e->get_type() == AST_CALL_LIST);
+  AstCallList* list = static_cast<AstCallList*>(e);
+  $$ = list->append_expr($3);
 }
