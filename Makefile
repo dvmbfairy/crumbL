@@ -8,7 +8,7 @@ OBJs =   parser.tab.o lex.yy.o Expression.o SymbolTable.o frontend.o AstNil.o As
 default: parser
 
 lexer: ${OBJs}
-	${CC} ${CFLAGS} ${INC_PARAMS} ${OBJs} -o lexer -lfl
+	cp lexer.l lexer_test/lexer.l && cd lexer_test && make && cp lexer ../
 
 lex.yy.c: lexer.l parser-defs.h
 	flex -i lexer.l
@@ -31,7 +31,10 @@ SymbolTable.o:	SymbolTable.cpp
 Expression.o:	ast/*.h ast/*.cpp #ast/Expression.cpp ast/Expression.h ast/AstString.cpp ast/AstString.h
 	${CC} ${CFLAGS} ${INC_PARAMS} -c ast/*.cpp 
 
-tp:
+tl: lexer
+	./lexer test.L
+
+tp: parser
 	./parser -ast test.L
 
 clean:

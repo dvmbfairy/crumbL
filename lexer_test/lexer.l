@@ -21,11 +21,11 @@ string buffer;
  */
 int comment_depth = 0;
 
-int curr_line = 1;
 %}
 
 
 %option noyywrap
+%option nounput
 
 WHITESPACE [ \t\f\r\v]+
 NEWLINE [\n]
@@ -38,6 +38,7 @@ MINUS [-]
 STAR "*"
 DIVIDE [/]
 MODULO [%]
+CONCAT [:][:]
 LPAREN [(]
 RPAREN [)]
 AND [&]
@@ -63,7 +64,6 @@ SEMICOLON [;]
 }
 
 <INITIAL>{STAR}{RPAREN} {
-    curr_lineno = curr_line;
 	SET_LEXEME(yytext);
 	return TOKEN_ERROR;
 }
@@ -84,7 +84,6 @@ SEMICOLON [;]
 }
 
 <COMMENT><<EOF>> {
-    curr_lineno = curr_line;
 	SET_LEXEME(yytext);
 	return TOKEN_ERROR;
 }
@@ -102,7 +101,7 @@ SEMICOLON [;]
 
 <STRING>{NEWLINE} {
     buffer += yytext;
-    curr_line++;
+    curr_lineno++;
 }
 
 <STRING>. {
@@ -110,7 +109,6 @@ SEMICOLON [;]
 }
 
 <STRING><<EOF>> {
-    curr_lineno = curr_line;
 	SET_LEXEME(yytext);
 	return TOKEN_ERROR;
 }
@@ -121,7 +119,7 @@ SEMICOLON [;]
 
 <INITIAL,COMMENT>{NEWLINE} {
     /* Do nothing, but increment line numbers */
-    curr_line++;
+    curr_lineno++;
 }
 
 {COMMA} {
@@ -192,10 +190,6 @@ ret {
     return TOKEN_RET;
 }
 
-lazy {
-    return TOKEN_LAZY;
-}
-
 {EQUALS} {
     return TOKEN_ASSIGN;
 }
@@ -210,6 +204,10 @@ lazy {
 
 {STAR} {
     return TOKEN_TIMES;
+}
+
+{CONCAT} {
+    return TOKEN_CONCAT;
 }
 
 {PLUS} {
@@ -280,7 +278,6 @@ lazy {
 
 . {
   /* Leave this rule at the end of our lexer to "eat up" all illegal strings */
-  	curr_lineno = curr_line;
 	SET_LEXEME(yytext);
 	return TOKEN_ERROR;
 }

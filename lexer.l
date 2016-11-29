@@ -25,6 +25,7 @@ int comment_depth = 0;
 
 
 %option noyywrap
+%option nounput
 
 WHITESPACE [ \t\f\r\v]+
 NEWLINE [\n]
