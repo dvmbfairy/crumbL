@@ -2,10 +2,7 @@
 
 AstAssign* AstAssign::make(AstIdentifier* id, Expression* val)
 {
-	AstAssign* l = new AstAssign(id, val);
-	Expression* res = get_exp(l);
-	assert(res->get_type() == AST_ASSIGN);
-	return static_cast<AstAssign*>(res);
+	return new AstAssign(id, val);
 }
 
 

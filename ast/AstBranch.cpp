@@ -3,10 +3,7 @@
 AstBranch* AstBranch::make(Expression* pred, Expression* then_exp,
 		Expression* else_exp)
 {
-	AstBranch* t = new AstBranch(pred, then_exp, else_exp);
-	Expression* res = get_exp(t);
-	assert(res->get_type() == AST_BRANCH);
-	return static_cast<AstBranch*>(res);
+	return new AstBranch(pred, then_exp, else_exp);
 }
 
 

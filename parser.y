@@ -91,8 +91,11 @@ program statement
   Expression* first = $1;
   Expression* next = $2;
   if (first == NULL) {
-    res_expr = $2;
-    $$ = $2;
+    // the first expression is the first expression
+    if (res_expr == NULL) {
+      res_expr = next;
+    }
+    $$ = next;
   } else {
     Expression* last = first;
     while (last -> get_next_exp() != NULL) {
@@ -118,11 +121,22 @@ TOKEN_PRINT TOKEN_LPAREN expression TOKEN_RPAREN TOKEN_SEMICOLON
 TOKEN_IF TOKEN_LPAREN expression TOKEN_RPAREN TOKEN_THEN program TOKEN_ELSE program TOKEN_FI
 {
   $$ = AstBranch::make($3, $6, $8);
+  // if the first statement in the program is an if statement, then the inner
+  // programs are parsed first, so the resulting expression should be this if
+  // statement
+  if (res_expr == $6 || res_expr == $8) {
+    res_expr = $$;
+  }
 }
 |
 TOKEN_WHILE TOKEN_LPAREN expression TOKEN_RPAREN TOKEN_DO program TOKEN_OB
 {
   $$ = AstWhile::make($3, $6);
+  // if the first statement in the program is this while loop, then the inner
+  // program is parsed first, so the resulting expression should be this loop
+if (res_expr == $6) {
+    res_expr = $$;
+  }
 }
 |
 TOKEN_FUNC TOKEN_IDENTIFIER TOKEN_LPAREN parameter_list TOKEN_RPAREN program TOKEN_RET expression TOKEN_SEMICOLON TOKEN_CNUF
@@ -130,6 +144,12 @@ TOKEN_FUNC TOKEN_IDENTIFIER TOKEN_LPAREN parameter_list TOKEN_RPAREN program TOK
   assert($4->get_type() == AST_PARAMETER_LIST);
   AstParameterList* list = static_cast<AstParameterList*>($4);
   $$ = AstFunc::make(getIdentifier($2), list, $6, $8);
+  // if the first statement in the program is this function definition, then
+  // the inner program is parsed first, so the resulting expression should be
+  // this statement
+  if (res_expr == $6) {
+    res_expr = $$;
+  }
 }
 
 

@@ -3,11 +3,7 @@
 
 AstFunc* AstFunc::make(AstIdentifier* id, AstParameterList* params, Expression* body, Expression* ret)
 {
-	AstFunc* t = new AstFunc(id, params, body, ret);
-	Expression* res = get_exp(t);
-	assert(res->get_type() == AST_FUNC);
-	return static_cast<AstFunc*>(res);
-
+	return new AstFunc(id, params, body, ret);
 }
  
 

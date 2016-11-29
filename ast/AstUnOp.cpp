@@ -4,6 +4,9 @@
 AstUnOp* AstUnOp::make(unop_type bt, Expression* e)
 {
 	AstUnOp* t = new AstUnOp(bt, e);
+        if (bt == PRINT) {
+            return t;
+        }
 	Expression* res = get_exp(t);
 	assert(res->get_type() == AST_UNOP);
 	return static_cast<AstUnOp*>(res);
