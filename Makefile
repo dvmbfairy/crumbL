@@ -38,7 +38,7 @@ tp: parser
 	./parser -ast test.L
 
 clean:
-	rm -f crumbl-interpreter lexer parser *.o parser.tab.[ch] parser.output
+	rm -f crumbl-interpreter lexer lex.yy.c parser *.o parser.tab.[ch] parser.output
 
 depend:
 	makedepend -I. *.c

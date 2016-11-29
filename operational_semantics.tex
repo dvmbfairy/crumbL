@@ -279,6 +279,21 @@ Let \textbf{False} be "", 0, or Nil.
 
 \ 
 
+\inference{E,F |- C: \text{True}  \\
+		   E,F |- S : E^\prime, F^\prime}
+		   {E,F |- \text{if }(C) \text{ then } S \text{ fi } : E^\prime, F^\prime}
+		   
+\ 
+
+\ 
+
+\inference{E,F |- C: \text{False}}
+		   {E,F |- \text{if }(C) \text{ then } S \text{ fi } : E, F}
+		   
+\ 
+
+\ 
+
 
 \inference{E,F |- C: \text{False} }
 		   {E,F |- \text{while}(C) \text{ do } S \text{ ob } : E, F}
