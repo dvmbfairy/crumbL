@@ -14,10 +14,10 @@ int yyerror(const char* p)
   return 1;
 };
 
-AstIdentifier* getIdentifier(Expression* token)
+AstIdentifier* getIdentifier(Expression* token, bool lazy)
 {
   string lexeme = GET_LEXEME(token);
-  return AstIdentifier::make(lexeme);
+  return AstIdentifier::make(lexeme, lazy);
 }
 
 %}
@@ -110,7 +110,12 @@ program statement
 statement:
 TOKEN_IDENTIFIER TOKEN_ASSIGN expression TOKEN_SEMICOLON
 {
-  $$ = AstAssign::make(getIdentifier($1), $3);
+  $$ = AstAssign::make(getIdentifier($1, false), $3);
+}
+|
+TOKEN_LAZY TOKEN_IDENTIFIER TOKEN_ASSIGN expression TOKEN_SEMICOLON
+{
+  $$ = AstAssign::make(getIdentifier($2, true), $4);
 }
 |
 TOKEN_PRINT TOKEN_LPAREN expression TOKEN_RPAREN TOKEN_SEMICOLON
@@ -143,11 +148,24 @@ TOKEN_FUNC TOKEN_IDENTIFIER TOKEN_LPAREN parameter_list TOKEN_RPAREN program TOK
 {
   assert($4->get_type() == AST_PARAMETER_LIST);
   AstParameterList* list = static_cast<AstParameterList*>($4);
-  $$ = AstFunc::make(getIdentifier($2), list, $6, $8);
+  $$ = AstFunc::make(getIdentifier($2, false), list, $6, $8);
   // if the first statement in the program is this function definition, then
   // the inner program is parsed first, so the resulting expression should be
   // this statement
   if (res_expr == $6) {
+    res_expr = $$;
+  }
+}
+|
+TOKEN_FUNC TOKEN_LAZY TOKEN_IDENTIFIER TOKEN_LPAREN parameter_list TOKEN_RPAREN program TOKEN_RET expression TOKEN_SEMICOLON TOKEN_CNUF
+{
+  assert($5->get_type() == AST_PARAMETER_LIST);
+  AstParameterList* list = static_cast<AstParameterList*>($5);
+  $$ = AstFunc::make(getIdentifier($3, true), list, $7, $9);
+  // if the first statement in the program is this function definition, then
+  // the inner program is parsed first, so the resulting expression should be
+  // this statement
+  if (res_expr == $7) {
     res_expr = $$;
   }
 }
@@ -176,7 +194,12 @@ TOKEN_STRING
 |
 TOKEN_IDENTIFIER
 {
-  $$ = getIdentifier($1);
+  $$ = getIdentifier($1, false);
+}
+|
+TOKEN_LAZY TOKEN_IDENTIFIER
+{
+  $$ = getIdentifier($2, true);
 }
 |
 expression TOKEN_PLUS expression 
@@ -284,7 +307,7 @@ TOKEN_IDENTIFIER TOKEN_LPAREN call_list TOKEN_RPAREN
   Expression* e = $3;
   assert(e->get_type() == AST_CALL_LIST);
   AstCallList* list = static_cast<AstCallList*>(e);
-  $$ = AstFunctionCall::make(getIdentifier($1), list);
+  $$ = AstFunctionCall::make(getIdentifier($1, false), list);
 }
 |
 TOKEN_ERROR
@@ -304,7 +327,12 @@ parameter_list: %empty {
 |
 TOKEN_IDENTIFIER
 {
-  $$ = AstParameterList::make(getIdentifier($1));
+  $$ = AstParameterList::make(getIdentifier($1, false));
+}
+|
+TOKEN_LAZY TOKEN_IDENTIFIER
+{
+  $$ = AstParameterList::make(getIdentifier($2, true));
 }
 |
 parameter_list TOKEN_COMMA TOKEN_IDENTIFIER
@@ -312,8 +340,16 @@ parameter_list TOKEN_COMMA TOKEN_IDENTIFIER
   Expression* e = $1;
   assert(e->get_type() == AST_PARAMETER_LIST);
   AstParameterList* list = static_cast<AstParameterList*>(e);
-  $$ = list->append_id(getIdentifier($3));
+  $$ = list->append_id(getIdentifier($3, false));
 } 
+|
+parameter_list TOKEN_COMMA TOKEN_LAZY TOKEN_IDENTIFIER
+{
+  Expression* e = $1;
+  assert(e->get_type() == AST_PARAMETER_LIST);
+  AstParameterList* list = static_cast<AstParameterList*>(e);
+  $$ = list->append_id(getIdentifier($4, true));
+}
 
 call_list: %empty {
   $$ = AstCallList::make();
