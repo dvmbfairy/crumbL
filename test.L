@@ -1,5 +1,3 @@
-func foo(a, lazy b, c)
-x = 1 + 2;
-ret x;
+func foo(a, b, c)
+ret "hi";
 cnuf
-lazy a = foo(1, 2, 4);
