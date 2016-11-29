@@ -297,6 +297,26 @@ Expression* Evaluator::eval(Expression* e)
 		}
 
 
+		case AST_BRANCH: {
+			AstBranch* branch = static_cast<AstBranch*>(e);
+			bool cond_true = truthValue(eval(branch->get_pred()));
+			
+			if(cond_true) {
+				Expression* then = branch->get_then_exp();
+				if(then != NULL) {
+					res_exp = eval(then);
+				}
+			}
+			else {
+				Expression* els = branch->get_else_exp();
+				if(els != NULL) {
+					res_exp = eval(els);
+				}
+			}
+
+			break;
+		}
+
 		default:
 			assert(false);
 
