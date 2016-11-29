@@ -20,13 +20,6 @@ AstIdentifier* getIdentifier(Expression* token)
   return AstIdentifier::make(lexeme);
 }
 
-AstFunc* getFunc(Expression* formal, Expression* body)
-{
-  assert(formal->get_type() == AST_PARAMETER_LIST);
-  AstParameterList* list = static_cast<AstParameterList*>(formal);
-  return AstFunc::make(list, body);
-}
-
 %}
 /* BISON Declarations */
 %token 
@@ -70,6 +63,7 @@ TOKEN_AND
 TOKEN_OR
 TOKEN_ISNIL
 TOKEN_ERROR
+TOKEN_LAZY
 
 
 
@@ -121,16 +115,22 @@ TOKEN_PRINT TOKEN_LPAREN expression TOKEN_RPAREN TOKEN_SEMICOLON
   $$ = AstUnOp::make(PRINT, $3);
 }
 |
-TOKEN_IF TOKEN_LPAREN conditional TOKEN_RPAREN TOKEN_THEN program TOKEN_ELSE program TOKEN_FI
+TOKEN_IF TOKEN_LPAREN expression TOKEN_RPAREN TOKEN_THEN program TOKEN_ELSE program TOKEN_FI
 {
   $$ = AstBranch::make($3, $6, $8);
 }
 |
-TOKEN_WHILE TOKEN_LPAREN conditional TOKEN_RPAREN TOKEN_DO program TOKEN_OB
+TOKEN_WHILE TOKEN_LPAREN expression TOKEN_RPAREN TOKEN_DO program TOKEN_OB
 {
   $$ = AstWhile::make($3, $6);
 }
-
+|
+TOKEN_FUNC TOKEN_IDENTIFIER TOKEN_LPAREN parameter_list TOKEN_RPAREN program TOKEN_RET expression TOKEN_SEMICOLON TOKEN_CNUF
+{
+  assert($4->get_type() == AST_PARAMETER_LIST);
+  AstParameterList* list = static_cast<AstParameterList*>($4);
+  $$ = AstFunc::make(getIdentifier($2), list, $6, $8);
+}
 
 
 expression:
@@ -213,9 +213,7 @@ TOKEN_ERROR
    yyerror(error.c_str());
    YYERROR;
 }
-
-
-conditional:
+|
 expression TOKEN_EQ expression 
 {
   $$ = AstBinOp::make(EQ, $1, $3);
@@ -246,17 +244,36 @@ expression TOKEN_GEQ expression
   $$ = AstBinOp::make(GEQ, $1, $3);
 }
 |
-TOKEN_NOT conditional
+TOKEN_NOT expression
 {
   $$ = AstUnOp::make(NOT, $2);
 }
 |
-conditional TOKEN_AND conditional 
+expression TOKEN_AND expression 
 {
   $$ = AstBinOp::make(AND, $1, $3);
 }
 |
-conditional TOKEN_OR conditional 
+expression TOKEN_OR expression 
 {
   $$ = AstBinOp::make(OR, $1, $3);
 }
+
+
+parameter_list: %empty {
+  $$ = AstParameterList::make();
+}
+|
+TOKEN_IDENTIFIER
+{
+  $$ = AstParameterList::make(getIdentifier($1));
+}
+|
+parameter_list TOKEN_COMMA TOKEN_IDENTIFIER
+{
+  Expression* e = $1;
+  assert(e->get_type() == AST_PARAMETER_LIST);
+  AstParameterList* list = static_cast<AstParameterList*>(e);
+  $$ = list->append_id(getIdentifier($3));
+}
+

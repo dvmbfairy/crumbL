@@ -60,7 +60,7 @@
       string program_to_string(int depth = 0);
       virtual string to_value();
       virtual Expression* substitute(Expression* e1,
-    		  Expression* e2) = 0;
+                  Expression* e2) = 0;
       virtual bool operator==(const Expression& other) = 0;
       virtual ~Expression() {}
 

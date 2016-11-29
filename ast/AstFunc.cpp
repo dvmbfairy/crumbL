@@ -1,85 +1,87 @@
 #include "AstFunc.h"
 
 
-AstFunc* AstFunc::make(AstParameterList* formal, Expression* body)
+AstFunc* AstFunc::make(AstIdentifier* id, AstParameterList* params, Expression* body, Expression* ret)
 {
-	Expression* res = body;
-	assert(formal->get_ids().size() > 0);
-	for(vector<AstIdentifier*>::const_reverse_iterator it =
-			formal->get_ids().rbegin(); it != formal->get_ids().rend();it++)
-	{
-		AstIdentifier* id = *it;
-		res = AstFunc::make(id, res);
-	}
-
+	AstFunc* t = new AstFunc(id, params, body, ret);
+	Expression* res = get_exp(t);
 	assert(res->get_type() == AST_FUNC);
 	return static_cast<AstFunc*>(res);
 
 }
 
 
-AstFunc* AstFunc::make(AstIdentifier* formal, Expression* body)
-{
-	AstFunc* l = new AstFunc(formal, body);
-	Expression* res = get_exp(l);
-	assert(res->get_type() == AST_FUNC);
-	return static_cast<AstFunc*>(res);
-}
-
-
-AstFunc::AstFunc(AstIdentifier* formal, Expression* body)
+AstFunc::AstFunc(AstIdentifier* id, AstParameterList* params, Expression* body, Expression* ret)
 {
   this->et = AST_FUNC;
-  this->formal = formal;
+  this->id = id;
+  this->params = params;
   this->body = body;
-  this->hash_c = 73+ formal->get_hash()*9 + body->get_hash()*3;
+  this->ret = ret;
+  this->hash_c = 73+ params->get_hash()*9 + body->get_hash()*3;
 }
 
 
 string AstFunc::to_string(int d)
-{
-  string res =  get_depth(d) + "Func\n";
-  res +=  get_depth(d) + "Formal:\n";
-  res += formal->to_string(d+1);
-  res += get_depth(d) +  "Body:\n";
-  res += body->to_string(d+1);
+{ 
+  string res =  get_depth(d) + "FUNC\n";
+  res += get_depth(d) + "ID:\n";
+  res += id->to_string(d+1);
+  res +=  get_depth(d) + "PARAM LIST:\n";
+  res += params->to_string(d+1);
+  res += get_depth(d) +  "BODY:\n";
+  res += body->program_to_string(d+1);
+  res += get_depth(d) +  "RET:\n";
+  res += ret->to_string(d+1);
   return res;
 }
+
 string AstFunc::to_value()
 {
- return "lambda " + formal->to_value() + ". " + body->to_value();
+ return "func " + id->to_value() + "(" + params->to_value() + ") " + body->to_value() + " " + ret->to_value() + "; cnuf";
 }
 
+AstIdentifier* AstFunc::get_id()
+{
+	return id;
+}
+
+AstParameterList* AstFunc::get_params()
+{
+  return params;
+}
 
 Expression* AstFunc::get_body()
 {
   return body;
 }
 
-
-
-AstIdentifier* AstFunc::get_formal()
+Expression* AstFunc::get_ret()
 {
-  return formal;
+	return ret;
 }
-
 
 Expression* AstFunc::substitute(Expression* e1, Expression* e2)
 {
 	//avoid \alpha capture
-	if(e1 == formal) return this;
-	Expression* _new_f = formal->substitute(e1, e2);
-	assert(_new_f->get_type() == AST_IDENTIFIER);
-	AstIdentifier* new_f = static_cast<AstIdentifier*>(_new_f);
+	if(e1 == this) return e2;
+	Expression* new_id = id->substitute(e1, e2);
+	assert(new_id->get_type() == AST_IDENTIFIER);
+	AstIdentifier* this_id = static_cast<AstIdentifier*>(new_id);
+	Expression* new_params = params->substitute(e1, e2);
+	assert(new_params->get_type() == AST_PARAMETER_LIST);
+	AstParameterList* this_params = static_cast<AstParameterList*>(new_params);
 	Expression* new_body = body->substitute(e1, e2);
-	return AstFunc::make(new_f, new_body);
-
+	Expression* new_ret = ret->substitute(e1, e2);
+	if(id == this_id && params == this_params && body == new_body && ret == new_ret)
+		return this;
+	return AstFunc::make(this_id, this_params, new_body, new_ret);
 }
 
 bool AstFunc::operator==(const Expression& other)
 {
 	if(other.get_type() != AST_FUNC) return false;
 	AstFunc& l = (AstFunc&) other;
-	return formal == l.formal && body == l.body;
+	return (id == l.id && params == l.params && body == l.body && ret == l.ret);
 }
 
