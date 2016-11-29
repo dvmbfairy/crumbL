@@ -125,6 +125,11 @@ TOKEN_IF TOKEN_LPAREN conditional TOKEN_RPAREN TOKEN_THEN program TOKEN_ELSE pro
 {
   $$ = AstBranch::make($3, $6, $8);
 }
+|
+TOKEN_WHILE TOKEN_LPAREN conditional TOKEN_RPAREN TOKEN_DO program TOKEN_OB
+{
+  $$ = AstWhile::make($3, $6);
+}
 
 
 

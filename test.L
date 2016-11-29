@@ -1,5 +1,4 @@
-func foo(a, b)
-print("*");
-id = 3;
-ret id;
-cnuf
+while (1 < 2) do
+print(1);
+print(6);
+ob
