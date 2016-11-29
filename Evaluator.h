@@ -12,6 +12,9 @@ class AstFunc;
 class Evaluator {
 private:
 	SymbolTable sym_tab;
+	SymbolTable func_ret_table;
+	SymbolTable func_param_table;
+	SymbolTable func_body_table;
 	int c;
 public:
 	Evaluator();

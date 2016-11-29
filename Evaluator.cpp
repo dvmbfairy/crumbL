@@ -62,6 +62,9 @@ bool truthValue(Expression* e) {
 Evaluator::Evaluator()
 {
 	sym_tab.push();
+	func_ret_table.push();
+	func_param_table.push();
+	func_body_table.push();
 	c = 0;
 
 }
@@ -335,6 +338,7 @@ Expression* Evaluator::eval(Expression* e)
 			bool cond_true = truthValue(eval(while_loop->get_pred()));
 
 			Expression* do_exp = while_loop->get_do_exp();
+			//does the cookie crumble?
 			while(cond_true) {
 				
 
@@ -349,158 +353,75 @@ Expression* Evaluator::eval(Expression* e)
 			break;
 		}
 
+		case AST_FUNC: {
+			AstFunc* func = static_cast<AstFunc*>(e);
+			AstIdentifier* func_name = func->get_id();
+			AstParameterList* param_list = func->get_params();
+			Expression* body = func->get_body();
+			Expression* func_ret = func->get_ret();
+			if(func_body_table.find(func_name) != NULL) {
+				report_error(func, "Function " + func_name->get_id() + " has already been defined.");
+			}
+
+			func_body_table.add(func_name, body);
+			func_param_table.add(func_name, param_list);
+			func_ret_table.add(func_name, func_ret);
+
+			break;
+		}
+
+		case AST_FUNCTION_CALL: {
+			AstFunctionCall* func_call = static_cast<AstFunctionCall*>(e);
+			AstIdentifier* func_name = func_call->get_name();
+
+			AstCallList* call_list = func_call->get_call_list();
+
+			if(func_body_table.find(func_name) == NULL) {
+				report_error(func_call, "Function " + func_name->get_id() + " has not been defined.");
+			}
+
+			Expression* body = func_body_table.find(func_name);
+			Expression* func_ret = func_ret_table.find(func_name);
+			AstParameterList* func_param_list = static_cast<AstParameterList*>(func_param_table.find(func_name));
+			
+
+			vector<Expression*> list = call_list->get_exprs();
+
+			vector<AstIdentifier*> ids =  func_param_list->get_ids();
+			size_t ls = list.size();
+			size_t is = ids.size();
+			if(ls != is) {
+				report_error(func_call, "Incorrect number of arguments to function " + func_name->get_id() + "." +
+					" Expected " + to_string(is) + ", got " + to_string(ls) + ".");
+			}
+
+
+			vector<Expression*> evaluated_arguments;
+
+			//first, evaluate all arguments in the current environment.
+			for(uint i = 0; i < ids.size(); ++i) {
+				Expression* eval_exp = eval(list[i]);
+				evaluated_arguments.push_back(eval_exp);
+			}
+
+			//now, bind all arguments to their respective ideas in a fresh environment.
+			sym_tab.push();
+			for(uint i = 0; i < ids.size(); ++i) {
+				sym_tab.add(ids[i], evaluated_arguments[i]);
+			}
+
+			eval(body);
+			Expression* ret_expression = eval(func_ret);
+			res_exp = ret_expression;
+			sym_tab.pop();
+
+			break;
+		}	
+
 		default:
 			assert(false);
 
 	}
-	/*switch(e->get_type())
-	{
-	
-	case AST_UNOP:
-	{
-		AstUnOp* b = static_cast<AstUnOp*>(e);
-		res_exp = eval_unop(b);
-		break;
-	}
-	case AST_BINOP:
-	{
-		AstBinOp* b = static_cast<AstBinOp*>(e);
-		res_exp = eval_binop(b);
-		break;
-	}
-	case AST_READ:
-	{
-		AstRead* r = static_cast<AstRead*>(e);
-		string input;
-		getline(cin, input);
-		if(r->read_integer()) {
-			return AstInt::make(string_to_int(input));
-		}
-		return AstString::make(input);
-
-
-		break;
-	}
-	case AST_INT:
-	{
-		res_exp = e;
-		break;
-	}
-
-	case AST_STRING:
-	{	
-		res_exp = e;
-		break;
-	}
-
-	case AST_IDENTIFIER:
-	{
-
-		AstIdentifier* id = static_cast<AstIdentifier*>(e);
-		Expression* f = sym_tab.find(id);
-		if(f == NULL) {
-			report_error(id, "Identifier " + id->get_id() + " is not bound in current context");
-		}
-		res_exp = eval(f);
-		break;
-	}
-
-	case AST_LET:
-	{
-		AstLet* let = static_cast<AstLet*>(e);
-		Expression* v = eval(let->get_val());
-		sym_tab.push();
-		sym_tab.add(let->get_id(), v);
-		res_exp = eval(let->get_body());
-		sym_tab.pop();
-		break;
-
-	}
-
-	case AST_BRANCH:
-	{
-		AstBranch* branch = static_cast<AstBranch*>(e);
-		Expression* pred = eval(branch->get_pred());
-		if(pred->get_type() == AST_INT) {
-			AstInt* i = static_cast<AstInt*>(pred);
-			if(i->get_int() != 0) {
-				Expression* then = branch->get_then_exp();
-				res_exp = eval(then);
-
-			} else {
-				Expression* els = branch->get_else_exp();
-				res_exp = eval(els);
-			}
-		} else {
-			report_error(e, "Predicate in conditional must be an integer");
-		}
-
-		break;
-	}
-
-	case AST_EXPRESSION_LIST:
-	{
-
-		//sym_tab.push();
-		AstExpressionList* expressions = static_cast<AstExpressionList*>(e);
-
-		const vector<Expression*>& exp = expressions->get_expressions();
-		Expression* f = eval(exp[0]);
-
-		for(unsigned int i = 1; i < exp.size(); ++i) {
-			if(f->get_type() != AST_LAMBDA) {
-				report_error(expressions, "Only lambda expressions can be applied to other expressions");
-				return 0;
-			}
-
-			AstLambda* f_ = static_cast<AstLambda*>(f);
-			Expression* e2 = f_->get_body();
-			AstIdentifier* formal = f_->get_formal();
-			//sym_tab.add(formal, exp[i]);
-			e2 = e2->substitute(formal, exp[i]);
-
-			//cout << e2->to_string() << endl;
-			f = eval(e2);
-
-
-		}
-
-
-		//sym_tab.pop();
-
-
-
-
-		return f;
-
-
-	}
-
-	case AST_LAMBDA:
-	{
-		res_exp = e;
-		break;
-	}
-
-	case AST_NIL:
-	{
-		res_exp = e;
-		break;
-	}
-
-	case AST_LIST:
-	{
-		res_exp = e;
-		break;
-	}
-
-	//ADD CASES FOR ALL EXPRESSIONS!!
-	default:
-		assert(false);
-
-
-	}
-	*/
 
 
 	Expression* next = e->get_next_exp();
