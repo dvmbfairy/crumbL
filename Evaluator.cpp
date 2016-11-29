@@ -28,6 +28,15 @@ void report_error(Expression* e, const string & s)
 
 }
 
+/*
+an expression is false if:
+	integer 0
+	string ""
+	Nil
+
+Otherwise, the expression is true.
+*/
+
 bool truthValue(Expression* e) {
 
 	if(e->get_type() == AST_STRING) {
@@ -138,9 +147,6 @@ Expression* Evaluator::eval_binop(AstBinOp* b)
 	}
 
 
-
-
-
 	if(e1->get_type() == AST_STRING && e2->get_type() == AST_STRING) {
 
 
@@ -178,12 +184,7 @@ Expression* Evaluator::eval_binop(AstBinOp* b)
 		return AstInt::make(t ? 1 : 0);
 	}
 
-	
-
-
 	assert(false);
-
-
 }
 
 Expression* Evaluator::eval_unop(AstUnOp* b)
@@ -248,8 +249,6 @@ Expression* Evaluator::eval(Expression* e)
 	//cout << e->to_string() << endl;
 	Expression* res_exp = NULL;
 	
-
-
 	switch(e->get_type()) {
 		case AST_UNOP:
 		{
@@ -316,6 +315,35 @@ Expression* Evaluator::eval(Expression* e)
 				if(els != NULL) {
 					res_exp = eval(els);
 				}
+			}
+
+			break;
+		}
+
+		case AST_NIL: {
+			res_exp = e;
+			break;
+		}
+
+		case AST_LIST: {
+			res_exp = e;
+			break;
+		}
+
+		case AST_WHILE: {
+			AstWhile* while_loop = static_cast<AstWhile*>(e);
+			bool cond_true = truthValue(eval(while_loop->get_pred()));
+
+			Expression* do_exp = while_loop->get_do_exp();
+			while(cond_true) {
+				
+
+				if(do_exp != NULL) {
+					res_exp = eval(do_exp);
+				}
+
+				cond_true = truthValue(eval(while_loop->get_pred()));
+
 			}
 
 			break;
