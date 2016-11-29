@@ -278,14 +278,7 @@ expression TOKEN_OR expression
 {
   $$ = AstBinOp::make(OR, $1, $3);
 }
-|
-TOKEN_IDENTIFIER TOKEN_LPAREN call_list TOKEN_RPAREN
-{
-  Expression* e = $3;
-  assert(e->get_type() == AST_CALL_LIST);
-  AstCallList* list = static_cast<AstCallList*>(e);
-  $$ = AstFunctionCall::make(getIdentifier($1), list);
-}
+
 
 
 parameter_list: %empty {

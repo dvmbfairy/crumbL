@@ -111,6 +111,11 @@ Expression* Evaluator::eval_binop(AstBinOp* b)
 		return AstInt::make(i1->get_int() + i2->get_int());
 
 	}
+	if(b->get_binop_type() == MINUS) {
+		AstInt* i1 = static_cast<AstInt*>(e1);
+		AstInt* i2 = static_cast<AstInt*>(e2);
+		return AstInt::make(i1->get_int() - i2->get_int());
+	}
 	else if(b->get_binop_type() == TIMES) {
 		AstInt* i1 = static_cast<AstInt*>(e1);
 		AstInt* i2 = static_cast<AstInt*>(e2);
@@ -161,7 +166,6 @@ Expression* Evaluator::eval_binop(AstBinOp* b)
 		bool t;
 		long int i1 = static_cast<AstInt*>(e1)->get_int();
 		long int i2 = static_cast<AstInt*>(e2)->get_int();
-
 		switch(b->get_binop_type()) {
 			case(EQ):  t = i1 == i2; break;
 			case(NEQ): t = i1 != i2; break;
