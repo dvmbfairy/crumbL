@@ -162,6 +162,11 @@ TOKEN_INT
   	$$ = e;
 }
 |
+TOKEN_MINUS expression
+{
+  $$ = AstUnOp::make(NEGATE, $2);
+}
+|
 TOKEN_STRING 
 {
   string lexeme = GET_LEXEME($1);
@@ -224,16 +229,6 @@ TOKEN_NIL
   $$ = AstNil::make();
 }
 |
-TOKEN_ERROR 
-{
-   // do not change the error rule
-   string lexeme = GET_LEXEME($1);
-   string error = "Lexing error: ";
-   if(lexeme != "") error += lexeme;
-   yyerror(error.c_str());
-   YYERROR;
-}
-|
 expression TOKEN_EQ expression 
 {
   $$ = AstBinOp::make(EQ, $1, $3);
@@ -279,12 +274,27 @@ expression TOKEN_OR expression
   $$ = AstBinOp::make(OR, $1, $3);
 }
 |
+TOKEN_LPAREN expression TOKEN_RPAREN
+{
+  $$ = $2;
+}
+|
 TOKEN_IDENTIFIER TOKEN_LPAREN call_list TOKEN_RPAREN
 {
   Expression* e = $3;
   assert(e->get_type() == AST_CALL_LIST);
   AstCallList* list = static_cast<AstCallList*>(e);
   $$ = AstFunctionCall::make(getIdentifier($1), list);
+}
+|
+TOKEN_ERROR 
+{
+   // do not change the error rule
+   string lexeme = GET_LEXEME($1);
+   string error = "Lexing error: ";
+   if(lexeme != "") error += lexeme;
+   yyerror(error.c_str());
+   YYERROR;
 }
 
 
