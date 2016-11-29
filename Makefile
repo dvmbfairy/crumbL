@@ -3,9 +3,9 @@ CFLAGS = -g -Wall -std=c++0x
 INC=-. ./ast
 INC_PARAMS=$(foreach d, $(INC), -I$d)
 
-OBJs =   parser.tab.o lex.yy.o Expression.o SymbolTable.o frontend.o AstNil.o AstList.o AstUnOp.o AstBranch.o AstFunc.o AstWhile.o AstAssign.o AstCallList.o AstParameterList.o AstBinOp.o  AstIdentifier.o AstInt.o AstString.o
+OBJs =   parser.tab.o lex.yy.o Expression.o SymbolTable.o frontend.o Evaluator.o AstNil.o AstList.o AstUnOp.o AstBranch.o AstFunc.o AstWhile.o AstAssign.o AstCallList.o AstParameterList.o AstBinOp.o  AstIdentifier.o AstInt.o AstString.o
 
-default: parser
+default: lexer parser interpreter
 
 lexer: ${OBJs}
 	${CC} ${CFLAGS} ${INC_PARAMS} ${OBJs} -o lexer -lfl
@@ -22,8 +22,8 @@ parser.tab.c: parser.y parser-defs.h
 interpreter: ${OBJS}
 	${CC} ${CFLAGS} ${INC_PARAMS} ${OBJs} -o crumbl-interpreter -lfl
 
-frontend.o:	frontend.cpp
-	${CC} ${CFLAGS} ${INC_PARAMS} -c frontend.cpp
+frontend.o:	frontend.cpp Evaluator.cpp
+	${CC} ${CFLAGS} ${INC_PARAMS} -c frontend.cpp Evaluator.cpp
 	
 SymbolTable.o:	SymbolTable.cpp
 	${CC} ${CFLAGS} ${INC_PARAMS} -c SymbolTable.cpp 

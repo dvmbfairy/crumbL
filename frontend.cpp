@@ -2,7 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include "ast/expression.h"
-
+#include "Evaluator.h"
 using namespace std;
 
 int yylex();
@@ -100,6 +100,12 @@ int main(int argc, char** argv)
 	  cout << "****************** AST ******************" << endl;
 	  cout << (res_expr == NULL ? "EMPTY PROGRAM" : res_expr->program_to_string()) << endl;
 	  cout << "*****************************************" << endl;
+  }
+
+  if(res_expr != NULL) {
+    Evaluator e;
+    e.eval(res_expr);
+    cout << endl << "That's the way the cookie crumbles."<< endl;
   }
 
 }
