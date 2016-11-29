@@ -258,6 +258,14 @@ expression TOKEN_OR expression
 {
   $$ = AstBinOp::make(OR, $1, $3);
 }
+|
+TOKEN_IDENTIFIER TOKEN_LPAREN call_list TOKEN_RPAREN
+{
+  Expression* e = $3;
+  assert(e->get_type() == AST_CALL_LIST);
+  AstCallList* list = static_cast<AstCallList*>(e);
+  $$ = AstFunctionCall::make(getIdentifier($1), list);
+}
 
 
 parameter_list: %empty {
@@ -275,5 +283,21 @@ parameter_list TOKEN_COMMA TOKEN_IDENTIFIER
   assert(e->get_type() == AST_PARAMETER_LIST);
   AstParameterList* list = static_cast<AstParameterList*>(e);
   $$ = list->append_id(getIdentifier($3));
-}
+} 
 
+call_list: %empty {
+  $$ = AstCallList::make();
+}
+|
+expression
+{
+  $$ = AstCallList::make($1);
+}
+|
+call_list TOKEN_COMMA expression
+{
+  Expression* e = $1;
+  assert(e->get_type() == AST_CALL_LIST);
+  AstCallList* list = static_cast<AstCallList*>(e);
+  $$ = list->append_expr($3);
+}

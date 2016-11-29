@@ -20,7 +20,7 @@ AstAssign::AstAssign(AstIdentifier* id, Expression* val)
 string AstAssign::to_string(int d)
 {
   string res =  get_depth(d) + "ASSIGN:";
-  res += id->to_string(d+1) + "\n";
+  res += id->to_string(d+1);
   res +=  get_depth(d) + "VAL:\n";
   res +=  val->to_string(d+1);
   return res;

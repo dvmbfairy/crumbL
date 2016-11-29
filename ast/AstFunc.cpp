@@ -9,7 +9,7 @@ AstFunc* AstFunc::make(AstIdentifier* id, AstParameterList* params, Expression* 
 	return static_cast<AstFunc*>(res);
 
 }
-
+ 
 
 AstFunc::AstFunc(AstIdentifier* id, AstParameterList* params, Expression* body, Expression* ret)
 {
