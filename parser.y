@@ -287,7 +287,7 @@ TOKEN_IDENTIFIER TOKEN_LPAREN call_list TOKEN_RPAREN
   $$ = AstFunctionCall::make(getIdentifier($1), list);
 }
 |
-TOKEN_ERROR 
+TOKEN_ERROR
 {
    // do not change the error rule
    string lexeme = GET_LEXEME($1);
