@@ -63,8 +63,8 @@ p\_list: a list of identifiers that make up the parameter list of the function d
 \subsection{Arithmetic}
 
 
-\inference{E,F |- e_1 : i_1 \\
-           E,F |- e_2 : i_2}
+\inference{E,F |- e_1 : i_1 \text{(integer)} \\
+           E,F |- e_2 : i_2 \text{(integer)}}
 		   {E,F |- e_1 \oplus e_2 : i_1 \oplus i_2 }
 
 \
@@ -75,8 +75,8 @@ where $\oplus \in \{+, -, *, \%\}$
 
 \
 
-\inference{E,F |- e_1 : i_1 \\
-           E,F |- e_2 : i_2 \\
+\inference{E,F |- e_1 : i_1 \text{(integer)} \\
+           E,F |- e_2 : i_2 \text{(integer)} \\
            i_2 \neq 0}
 		   {E,F |- e_1 / e_2 : i_1 / i_2 }
 		   
@@ -84,8 +84,16 @@ where $\oplus \in \{+, -, *, \%\}$
 
 \
 
-\inference{E,F |- e_1 : s_1 \\
-           E,F |- e_2 : s_2}
+
+\inference{E,F |- e : i \text{(integer)}}
+		   {E,F |- -e : -i }
+		   
+\
+
+\
+
+\inference{E,F |- e_1 : s_1 \text{(string)} \\
+           E,F |- e_2 : s_2 \text{(string)}}
 		   {E,F |- e_1::e_2 : s_1s_2 }
 		   
 		   

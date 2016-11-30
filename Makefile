@@ -22,6 +22,12 @@ parser.tab.c: parser.y parser-defs.h
 interpreter: ${OBJS}
 	${CC} ${CFLAGS} ${INC_PARAMS} ${OBJs} -o crumbl-interpreter -lfl
 
+operational_semantics.pdf: operational_semantics.tex
+	pdflatex operational_semantics.tex
+
+pdf: operational_semantics.pdf
+	xpdf operational_semantics.pdf
+
 frontend.o:	frontend.cpp
 	${CC} ${CFLAGS} ${INC_PARAMS} -c frontend.cpp
 	
@@ -38,7 +44,7 @@ tp: parser
 	./parser -ast test.L
 
 clean:
-	rm -f crumbl-interpreter lexer lex.yy.c parser *.o parser.tab.[ch] parser.output
+	rm -f crumbl-interpreter lexer lex.yy.c parser *.o parser.tab.[ch] parser.output *.aux *.log
 
 depend:
 	makedepend -I. *.c
