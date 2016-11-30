@@ -1,3 +1,4 @@
+
 func factorial(x)
 	print(x);
 	if(x == 0) then
@@ -13,3 +14,4 @@ z = factorial(3);
 
 
 print("factorial of 3: "::z);
+

@@ -6,10 +6,9 @@
  {
    private:
      string id;
-     bool lazy;
-     AstIdentifier(const string & id, bool lazy);
+     AstIdentifier(const string & id);
    public:
-    static AstIdentifier* make(const string & id, bool lazy);
+    static AstIdentifier* make(const string & id);
     virtual string to_string(int d = 0);
     virtual string to_value();
     const string & get_id();

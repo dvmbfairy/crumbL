@@ -14,7 +14,7 @@ AstFunc::AstFunc(AstIdentifier* id, AstParameterList* params, Expression* body, 
   this->params = params;
   this->body = body;
   this->ret = ret;
-  this->hash_c = 73+ params->get_hash()*9 + body->get_hash()*3;
+  this->hash_c = 73+ params->get_hash()*9 + (body == NULL ? 137 : body->get_hash()*3);
 }
 
 
