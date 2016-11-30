@@ -298,7 +298,8 @@ Expression* Evaluator::eval(Expression* e)
 			if(f == NULL) {
 				report_error(id, "Identifier " + id->get_id() + " is not bound in the current context");
 			}
-
+			f = eval(f);
+			sym_tab.add(id, f);
 			res_exp = f;
 			break;
 		}
@@ -307,7 +308,7 @@ Expression* Evaluator::eval(Expression* e)
 		{
 			AstAssign* assign = static_cast<AstAssign*>(e);
 			AstIdentifier* id = assign->get_id();
-			Expression* val = eval(assign->get_val());
+			Expression* val = assign->is_lazy() ? assign->get_val() : eval(assign->get_val());
 			sym_tab.add(id, val);
 			
 			res_exp = val;
@@ -399,7 +400,7 @@ Expression* Evaluator::eval(Expression* e)
 
 			vector<Expression*> list = call_list->get_exprs();
 
-			vector<AstIdentifier*> ids =  func_param_list->get_ids();
+			vector<pair<AstIdentifier*, bool> > ids =  func_param_list->get_ids();
 			size_t ls = list.size();
 			size_t is = ids.size();
 			if(ls != is) {
@@ -419,7 +420,7 @@ Expression* Evaluator::eval(Expression* e)
 			//now, bind all arguments to their respective ideas in a fresh environment.
 			sym_tab.push();
 			for(uint i = 0; i < ids.size(); ++i) {
-				sym_tab.add(ids[i], evaluated_arguments[i]);
+				sym_tab.add(ids[i].first, evaluated_arguments[i]);
 			}
 
 			eval(body);
