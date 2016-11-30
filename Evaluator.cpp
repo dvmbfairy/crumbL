@@ -65,6 +65,7 @@ Evaluator::Evaluator()
 	func_ret_table.push();
 	func_param_table.push();
 	func_body_table.push();
+	lazy_i = false;
 	c = 0;
 
 }
@@ -293,25 +294,82 @@ Expression* Evaluator::eval(Expression* e)
 
 		case AST_IDENTIFIER:
 		{
+			//sym_tab.print_contents();
+			//current_scope_lazy_variables.print_contents();
+			//if this identifier is lazy, set a flag that makes all other lookups look in the parent symbol table
+			
 			AstIdentifier* id = static_cast<AstIdentifier*>(e);
-			Expression* f = sym_tab.find(id);
-			if(f == NULL) {
+			pair<Expression*, bool> find = sym_tab.find(id);
+
+			if(find.second) {
+				sym_tab.remove_lazy(id);
+				Expression* evaluated = eval(find.first);
+				sym_tab.add(id, evaluated);
+				res_exp = evaluated;
+				break;
+			}
+
+			if(find.first == NULL) {
+				report_error(id, "Identifier " + id->get_id() + " is not bound in the current context");
+			}
+
+			res_exp = find.first;
+			break;
+
+
+			/*
+			Expression* lazy_find = current_scope_lazy_variables.find_current_scope(id);
+
+			Expression* normal_find = sym_tab.find_current_scope(id);
+
+			if(lazy_find != NULL) {
+				current_scope_lazy_variables.remove(id);
+				Expression* evaluated = eval(lazy_find);
+				sym_tab.add(id, evaluated);
+				res_exp = evaluated;
+				break;
+			}
+
+			//otherwise, we only found a non-lazy value for the id
+			if(normal_find == NULL) {
+				report_error(id, "Identifier " + id->get_id() + " is not bound in the current context");
+			}
+
+
+			res_exp = normal_find;
+			break;
+			*/
+			/*if(f == NULL) {
 				report_error(id, "Identifier " + id->get_id() + " is not bound in the current context");
 			}
 			f = eval(f);
+
 			sym_tab.add(id, f);
 			res_exp = f;
-			break;
+			break;*/
 		}
 
 		case AST_ASSIGN:
 		{
 			AstAssign* assign = static_cast<AstAssign*>(e);
+
 			AstIdentifier* id = assign->get_id();
-			Expression* val = assign->is_lazy() ? assign->get_val() : eval(assign->get_val());
-			sym_tab.add(id, val);
-			
-			res_exp = val;
+
+			if(assign->is_lazy()) {
+
+				res_exp = assign->get_val();
+				sym_tab.add_lazy(id, res_exp);
+			} else {
+				res_exp = eval(assign->get_val());
+				sym_tab.remove_lazy(id);
+				sym_tab.add(id, res_exp);
+			}
+			/*if(assign->is_lazy() && sym_tab.find(id) != NULL) {
+				report_error(id, "Non-lazy assignment followed by lazy assignment is not allowed.");
+			}*/
+			//Expression* val = assign->is_lazy() ? assign->get_val() : eval(assign->get_val());
+			//sym_tab.add(id, val);
+
 			break;
 		}
 
@@ -372,7 +430,7 @@ Expression* Evaluator::eval(Expression* e)
 			AstParameterList* param_list = func->get_params();
 			Expression* body = func->get_body();
 			Expression* func_ret = func->get_ret();
-			if(func_body_table.find(func_name) != NULL) {
+			if(func_body_table.find(func_name).first != NULL) {
 				report_error(func, "Function " + func_name->get_id() + " has already been defined.");
 			}
 
@@ -389,13 +447,13 @@ Expression* Evaluator::eval(Expression* e)
 
 			AstCallList* call_list = func_call->get_call_list();
 
-			if(func_body_table.find(func_name) == NULL) {
+			if(func_body_table.find(func_name).first == NULL) {
 				report_error(func_call, "Function " + func_name->get_id() + " has not been defined.");
 			}
 
-			Expression* body = func_body_table.find(func_name);
-			Expression* func_ret = func_ret_table.find(func_name);
-			AstParameterList* func_param_list = static_cast<AstParameterList*>(func_param_table.find(func_name));
+			Expression* body = func_body_table.find(func_name).first;
+			Expression* func_ret = func_ret_table.find(func_name).first;
+			AstParameterList* func_param_list = static_cast<AstParameterList*>(func_param_table.find(func_name).first);
 			
 
 			vector<Expression*> list = call_list->get_exprs();
@@ -413,16 +471,22 @@ Expression* Evaluator::eval(Expression* e)
 
 			//first, evaluate all arguments in the current environment.
 			for(uint i = 0; i < ids.size(); ++i) {
-				Expression* eval_exp = eval(list[i]);
-				evaluated_arguments.push_back(eval_exp);
+				Expression* expr = ids[i].second ? list[i] : eval(list[i]);
+
+				evaluated_arguments.push_back(expr);
 			}
 
 			//now, bind all arguments to their respective ideas in a fresh environment.
 			sym_tab.push();
-			for(uint i = 0; i < ids.size(); ++i) {
-				sym_tab.add(ids[i].first, evaluated_arguments[i]);
-			}
 
+			for(uint i = 0; i < evaluated_arguments.size(); ++i) {
+				if(ids[i].second) { //lazy
+					sym_tab.add_lazy(ids[i].first, evaluated_arguments[i]);
+				} else {
+					sym_tab.add(ids[i].first, evaluated_arguments[i]);
+				}
+				
+			}
 			eval(body);
 			Expression* ret_expression = eval(func_ret);
 			res_exp = ret_expression;
