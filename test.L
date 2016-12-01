@@ -1,9 +1,17 @@
-func lazy_test(lazy y) 
+func test(x)
+	
+	func yoyo() 
+		print("something: "::x);
+		ret 0;
+	cnuf
 
-	y = y+y;
-	ret y;
+	ret yoyo();
 cnuf
 
-lazy y = 4;
-y = lazy_test(y);
-print(y);
+
+
+
+
+x = test(5);
+
+y = test(4);

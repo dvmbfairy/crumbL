@@ -2,11 +2,6 @@
 #include "Evaluator.h"
 
 
-
-
-
-
-
 /*
  * This skeleton currently only contains code to handle integer constants, print and read. 
  * It is your job to handle all of the rest of the L language.
@@ -296,7 +291,6 @@ Expression* Evaluator::eval(Expression* e)
 		{
 			//sym_tab.print_contents();
 			//current_scope_lazy_variables.print_contents();
-			//if this identifier is lazy, set a flag that makes all other lookups look in the parent symbol table
 			
 			AstIdentifier* id = static_cast<AstIdentifier*>(e);
 			pair<Expression*, bool> find = sym_tab.find(id);
@@ -316,37 +310,6 @@ Expression* Evaluator::eval(Expression* e)
 			res_exp = find.first;
 			break;
 
-
-			/*
-			Expression* lazy_find = current_scope_lazy_variables.find_current_scope(id);
-
-			Expression* normal_find = sym_tab.find_current_scope(id);
-
-			if(lazy_find != NULL) {
-				current_scope_lazy_variables.remove(id);
-				Expression* evaluated = eval(lazy_find);
-				sym_tab.add(id, evaluated);
-				res_exp = evaluated;
-				break;
-			}
-
-			//otherwise, we only found a non-lazy value for the id
-			if(normal_find == NULL) {
-				report_error(id, "Identifier " + id->get_id() + " is not bound in the current context");
-			}
-
-
-			res_exp = normal_find;
-			break;
-			*/
-			/*if(f == NULL) {
-				report_error(id, "Identifier " + id->get_id() + " is not bound in the current context");
-			}
-			f = eval(f);
-
-			sym_tab.add(id, f);
-			res_exp = f;
-			break;*/
 		}
 
 		case AST_ASSIGN:
@@ -364,11 +327,6 @@ Expression* Evaluator::eval(Expression* e)
 				sym_tab.remove_lazy(id);
 				sym_tab.add(id, res_exp);
 			}
-			/*if(assign->is_lazy() && sym_tab.find(id) != NULL) {
-				report_error(id, "Non-lazy assignment followed by lazy assignment is not allowed.");
-			}*/
-			//Expression* val = assign->is_lazy() ? assign->get_val() : eval(assign->get_val());
-			//sym_tab.add(id, val);
 
 			break;
 		}
@@ -478,6 +436,9 @@ Expression* Evaluator::eval(Expression* e)
 
 			//now, bind all arguments to their respective ideas in a fresh environment.
 			sym_tab.push();
+			func_ret_table.push();
+			func_param_table.push();
+			func_body_table.push();
 
 			for(uint i = 0; i < evaluated_arguments.size(); ++i) {
 				if(ids[i].second) { //lazy
@@ -491,6 +452,9 @@ Expression* Evaluator::eval(Expression* e)
 			Expression* ret_expression = eval(func_ret);
 			res_exp = ret_expression;
 			sym_tab.pop();
+			func_ret_table.pop();
+			func_param_table.pop();
+			func_body_table.pop();
 
 			break;
 		}	
