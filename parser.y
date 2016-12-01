@@ -337,7 +337,12 @@ parameter_list: %empty {
   $$ = AstParameterList::make();
 }
 |
-TOKEN_IDENTIFIER
+parameter_nonempty_list
+{
+  $$ = $1;
+}
+
+parameter_nonempty_list: TOKEN_IDENTIFIER
 {
   $$ = AstParameterList::make(getIdentifier($1), false);
 }
@@ -347,7 +352,7 @@ TOKEN_LAZY TOKEN_IDENTIFIER
   $$ = AstParameterList::make(getIdentifier($2), true);
 }
 |
-parameter_list TOKEN_COMMA TOKEN_IDENTIFIER
+parameter_nonempty_list TOKEN_COMMA TOKEN_IDENTIFIER
 {
   Expression* e = $1;
   assert(e->get_type() == AST_PARAMETER_LIST);
@@ -355,7 +360,7 @@ parameter_list TOKEN_COMMA TOKEN_IDENTIFIER
   $$ = list->append_id(getIdentifier($3), false);
 } 
 |
-parameter_list TOKEN_COMMA TOKEN_LAZY TOKEN_IDENTIFIER
+parameter_nonempty_list TOKEN_COMMA TOKEN_LAZY TOKEN_IDENTIFIER
 {
   Expression* e = $1;
   assert(e->get_type() == AST_PARAMETER_LIST);
@@ -367,12 +372,17 @@ call_list: %empty {
   $$ = AstCallList::make();
 }
 |
-expression
+call_nonempty_list
+{
+  $$ = $1;
+}
+
+call_nonempty_list: expression
 {
   $$ = AstCallList::make($1);
 }
 |
-call_list TOKEN_COMMA expression
+call_nonempty_list TOKEN_COMMA expression
 {
   Expression* e = $1;
   assert(e->get_type() == AST_CALL_LIST);
