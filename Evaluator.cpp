@@ -60,7 +60,6 @@ Evaluator::Evaluator()
 	func_ret_table.push();
 	func_param_table.push();
 	func_body_table.push();
-	lazy_i = false;
 	c = 0;
 
 }
@@ -87,8 +86,6 @@ Expression* Evaluator::eval_binop(AstBinOp* b)
 		
 		return AstInt::make(t ? 1 : 0);
 	}	
-
-
 
 	if(e1->get_type() == AST_LIST || e2->get_type() == AST_LIST) {
 		report_error(b, "Binops @, and, and or are the only legal binops for lists");
@@ -158,9 +155,8 @@ Expression* Evaluator::eval_binop(AstBinOp* b)
 	}
 
 
+	//handles all logical operators for ints and strings
 	if(e1->get_type() == AST_STRING && e2->get_type() == AST_STRING) {
-
-
 
 		bool t;
 		string i1 = static_cast<AstString*>(e1)->get_string();
@@ -200,7 +196,6 @@ Expression* Evaluator::eval_binop(AstBinOp* b)
 
 Expression* Evaluator::eval_unop(AstUnOp* b)
 {
-
 
 	Expression* e = b->get_expression();
 	Expression* eval_e = eval(e);
@@ -247,17 +242,9 @@ Expression* Evaluator::eval_unop(AstUnOp* b)
 
 }
 
-
-
-
-
-
-
 Expression* Evaluator::eval(Expression* e)
 {
-	//sym_tab.print_contents();
 
-	//cout << e->to_string() << endl;
 	Expression* res_exp = NULL;
 	
 	switch(e->get_type()) {
@@ -289,12 +276,11 @@ Expression* Evaluator::eval(Expression* e)
 
 		case AST_IDENTIFIER:
 		{
-			//sym_tab.print_contents();
-			//current_scope_lazy_variables.print_contents();
 			
 			AstIdentifier* id = static_cast<AstIdentifier*>(e);
 			pair<Expression*, bool> find = sym_tab.find(id);
 
+			//if true, the value found has not yet been evaluated.
 			if(find.second) {
 				sym_tab.remove_lazy(id);
 				Expression* evaluated = eval(find.first);
@@ -319,7 +305,6 @@ Expression* Evaluator::eval(Expression* e)
 			AstIdentifier* id = assign->get_id();
 
 			if(assign->is_lazy()) {
-
 				res_exp = assign->get_val();
 				sym_tab.add_lazy(id, res_exp);
 			} else {
@@ -464,12 +449,11 @@ Expression* Evaluator::eval(Expression* e)
 
 	}
 
-
+	//if there's another statement in the program, evaluate it.
 	Expression* next = e->get_next_exp();
 	if(next != NULL) {
 		eval(next);
 	}
 	
-
 	return res_exp;
 }

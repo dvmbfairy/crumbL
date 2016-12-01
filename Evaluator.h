@@ -17,7 +17,6 @@ private:
 	SymbolTable func_body_table;
 
 	int c;
-	bool lazy_i;
 public:
 	Evaluator();
 	Expression* eval(Expression* e);

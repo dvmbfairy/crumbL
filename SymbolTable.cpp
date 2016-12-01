@@ -20,6 +20,8 @@ void SymbolTable::push()
 pair<Expression*, bool> SymbolTable::find(AstIdentifier* id)
 {
 
+	//when looking through the symbol table, first check the lazy map, then the normal map.
+	//pair.second is true when the value returned is lazy.
 	for(int i = values.size()-1; i >= 0; i--) {
 		map<AstIdentifier*, Expression*>& normal = values[i];
 		map<AstIdentifier*, Expression*>& lazy = lazy_values[i];
@@ -37,8 +39,6 @@ pair<Expression*, bool> SymbolTable::find(AstIdentifier* id)
 			r.second = false;
 			return r;
 		}
-
-		
 
 	}
 
