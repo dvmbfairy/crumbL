@@ -30,16 +30,13 @@ TOKEN_HD
 TOKEN_TL 
 TOKEN_CONS 
 TOKEN_NIL 
-TOKEN_DOT 
-TOKEN_WITH 
-TOKEN_LET 
 TOKEN_CONCAT
 TOKEN_PLUS 
 TOKEN_MINUS 
 TOKEN_IDENTIFIER 
 TOKEN_TIMES 
 TOKEN_DIVIDE 
-TOKEN_INT 
+TOKEN_INT
 TOKEN_LPAREN 
 TOKEN_RPAREN 
 TOKEN_AND 
@@ -53,12 +50,9 @@ TOKEN_LEQ
 TOKEN_IF 
 TOKEN_THEN 
 TOKEN_ELSE 
-TOKEN_LAMBDA 
-TOKEN_FUN 
 TOKEN_COMMA 
 TOKEN_STRING 
 TOKEN_ERROR 
-TOKEN_IN
 TOKEN_FI
 TOKEN_FUNC
 TOKEN_CNUF
@@ -120,21 +114,6 @@ input TOKEN_CONS
 input TOKEN_NIL
 {
 	cout << "TOKEN_NIL" << endl;
-}
-|
-input TOKEN_DOT 
-{
-	cout << "TOKEN_DOT" << endl;
-}
-|
-input TOKEN_WITH 
-{
-	cout << "TOKEN_WITH" << endl;
-}
-|
-input TOKEN_LET
-{
-	cout << "TOKEN_LET" << endl;
 }
 |
 input TOKEN_CONCAT
@@ -239,16 +218,6 @@ input TOKEN_ELSE
 	cout << "TOKEN_ELSE" << endl;
 }
 |
-input TOKEN_LAMBDA
-{
-	cout << "TOKEN_LAMBDA" << endl;
-}
-| 
-input TOKEN_FUN
-{
-	cout << "TOKEN_FUN" << endl;
-}
-|
 input TOKEN_COMMA
 {
 	cout << "TOKEN_COMMA" << endl;
@@ -258,11 +227,6 @@ input TOKEN_STRING
 {
 	string lexeme = GET_LEXEME($2);
 	cout << "TOKEN_STRING: " << lexeme << endl;
-}
-|
-input TOKEN_IN
-{
-	cout << "TOKEN_IN" << endl;
 }
 |
 input TOKEN_FI {
