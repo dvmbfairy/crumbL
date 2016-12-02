@@ -1,9 +1,3 @@
-/*
-angela may xie amx@cs.utexas.edu
-sarah wang sarahgw@cs.utexas.edu
-*/
-
-
 %{
 #include "parser-defs.h"
 #include "parser.tab.h"
@@ -50,7 +44,7 @@ EXCLAMATION [!]
 POUND [#]
 AT [@]
 DOT [.]
-SEMICOLON [;
+SEMICOLON [;]
  
 %x STRING
 %x COMMENT 
@@ -190,6 +184,10 @@ not {
 
 ret {
     return TOKEN_RET;
+}
+
+lazy {
+    return TOKEN_LAZY;
 }
 
 {EQUALS} {
