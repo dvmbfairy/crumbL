@@ -57,9 +57,7 @@ bool truthValue(Expression* e) {
 Evaluator::Evaluator()
 {
 	sym_tab.push();
-	func_ret_table.push();
-	func_param_table.push();
-	func_body_table.push();
+	func_tab.push();
 	c = 0;
 
 }
@@ -369,17 +367,21 @@ Expression* Evaluator::eval(Expression* e)
 
 		case AST_FUNC: {
 			AstFunc* func = static_cast<AstFunc*>(e);
+
 			AstIdentifier* func_name = func->get_id();
-			AstParameterList* param_list = func->get_params();
-			Expression* body = func->get_body();
-			Expression* func_ret = func->get_ret();
-			if(func_body_table.find(func_name).first != NULL) {
+			
+			//AstParameterList* param_list = func->get_params();
+			//Expression* body = func->get_body();
+			//Expression* func_ret = func->get_ret();
+			if(func_tab.find(func_name).first != NULL) {
 				report_error(func, "Function " + func_name->get_id() + " has already been defined.");
 			}
 
-			func_body_table.add(func_name, body);
-			func_param_table.add(func_name, param_list);
-			func_ret_table.add(func_name, func_ret);
+			func_tab.add(func_name, func);
+
+			//func_body_table.add(func_name, body);
+			//func_param_table.add(func_name, param_list);
+			//func_ret_table.add(func_name, func_ret);
 
 			break;
 		}
@@ -387,16 +389,16 @@ Expression* Evaluator::eval(Expression* e)
 		case AST_FUNCTION_CALL: {
 			AstFunctionCall* func_call = static_cast<AstFunctionCall*>(e);
 			AstIdentifier* func_name = func_call->get_name();
-
+			AstFunc* func = static_cast<AstFunc*>(func_tab.find(func_name).first);
 			AstCallList* call_list = func_call->get_call_list();
 
-			if(func_body_table.find(func_name).first == NULL) {
+			if(func == NULL) {
 				report_error(func_call, "Function " + func_name->get_id() + " has not been defined.");
 			}
 
-			Expression* body = func_body_table.find(func_name).first;
-			Expression* func_ret = func_ret_table.find(func_name).first;
-			AstParameterList* func_param_list = static_cast<AstParameterList*>(func_param_table.find(func_name).first);
+			Expression* body = func->get_body();
+			Expression* func_ret = func->get_ret();
+			AstParameterList* func_param_list = func->get_params();
 			
 
 			vector<Expression*> list = call_list->get_exprs();
@@ -421,9 +423,7 @@ Expression* Evaluator::eval(Expression* e)
 
 			//now, bind all arguments to their respective ideas in a fresh environment.
 			sym_tab.push();
-			func_ret_table.push();
-			func_param_table.push();
-			func_body_table.push();
+			func_tab.push();
 
 			for(uint i = 0; i < evaluated_arguments.size(); ++i) {
 				if(ids[i].second) { //lazy
@@ -433,13 +433,14 @@ Expression* Evaluator::eval(Expression* e)
 				}
 				
 			}
-			eval(body);
+			if(body != NULL) {
+				eval(body);
+			}
+			
 			Expression* ret_expression = eval(func_ret);
 			res_exp = ret_expression;
 			sym_tab.pop();
-			func_ret_table.pop();
-			func_param_table.pop();
-			func_body_table.pop();
+			func_tab.pop();
 
 			break;
 		}	
