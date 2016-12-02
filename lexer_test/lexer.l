@@ -1,9 +1,3 @@
-/*
-angela may xie amx@cs.utexas.edu
-sarah wang sarahgw@cs.utexas.edu
-*/
-
-
 %{
 #include "parser-defs.h"
 #include "parser.tab.h"

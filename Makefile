@@ -39,14 +39,18 @@ SymbolTable.o:	SymbolTable.cpp
 Expression.o:	ast/*.h ast/*.cpp #ast/Expression.cpp ast/Expression.h ast/AstString.cpp ast/AstString.h
 	${CC} ${CFLAGS} ${INC_PARAMS} -c ast/*.cpp 
 
+# test lexer: run the test for the lexer
 tl: lexer
 	./lexer test.L
 
+# test parser: run the test for the parser
 tp: parser
 	./parser -ast test.L
 
+# test interpreter: run the test for the interpreter
 ti: interpreter
 	./crumbl-interpreter test.L
+
 clean:
 	rm -f crumbl-interpreter lexer lex.yy.c parser *.o parser.tab.[ch] parser.output *.aux *.log
 
