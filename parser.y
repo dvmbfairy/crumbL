@@ -98,12 +98,8 @@ program statement
     }
     $$ = next;
   } else {
-    Expression* last = first;
-    while (last -> get_next_exp() != NULL) {
-      last = last -> get_next_exp();
-    }
-    last -> set_next_exp(next);
-    $$ = $1;
+    first -> set_next_exp(next);
+    $$ = $2;
   }
 }
 

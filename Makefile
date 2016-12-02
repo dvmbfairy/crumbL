@@ -45,6 +45,8 @@ tl: lexer
 tp: parser
 	./parser -ast test.L
 
+ti: interpreter
+	./crumbl-interpreter test.L
 clean:
 	rm -f crumbl-interpreter lexer lex.yy.c parser *.o parser.tab.[ch] parser.output *.aux *.log
 
