@@ -2,7 +2,6 @@ lexer
 lex.yy.c
 lexer_test/lex.yy.c
 *.o
-parser.tab.[ch]
 parser.output
 crumbl-interpreter
 parser

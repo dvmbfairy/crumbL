@@ -52,7 +52,7 @@ ti: interpreter
 	./crumbl-interpreter test.L
 
 clean:
-	rm -f crumbl-interpreter lexer lex.yy.c parser *.o parser.tab.[ch] parser.output *.aux *.log
+	rm -f crumbl-interpreter lexer lex.yy.c parser *.o parser.output *.aux *.log
 
 depend:
 	makedepend -I. *.c
