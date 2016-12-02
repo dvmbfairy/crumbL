@@ -6,6 +6,7 @@
 #include "AstIdentifier.h"
 #include "AstString.h"
 #include "AstInt.h"
+#include "AstRead.h"
 #include "AstParameterList.h"
 #include "AstCallList.h"
 #include "AstBranch.h"

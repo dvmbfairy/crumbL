@@ -203,10 +203,10 @@ Expression* Evaluator::eval_unop(AstUnOp* b)
 			AstString* s = static_cast<AstString*>(eval_e);
 			cout << s->get_string() << endl;
 		}
-		else cout << eval_e->to_value() << endl;
-
+		else {
+                    cout << eval_e->to_value() << endl;
+                }
 		return AstInt::make(0);
-
 	}
 	else if(b->get_unop_type() == ISNIL) {
 		int i = eval_e->get_type() == AST_NIL ? 1 : 0;
@@ -231,8 +231,14 @@ Expression* Evaluator::eval_unop(AstUnOp* b)
 	else if(b->get_unop_type() == NOT) {
 		bool t = truthValue(eval_e);
 		return AstInt::make(t ? 0 : 1);
+	} else if (b->get_unop_type() == NEGATE) {
+            if (eval_e->get_type() == AST_INT) {
+                AstInt* num = static_cast<AstInt*>(eval_e);
+                return AstInt::make(-num->get_int());
+            }
 
-	}
+            report_error(b, ("Cannot negate non-integer " + eval_e->to_value()).c_str());
+        }
 
 
 	assert(false);
@@ -271,6 +277,19 @@ Expression* Evaluator::eval(Expression* e)
 			res_exp = e;
 			break;
 		}
+
+                case AST_READ:
+                {
+                    AstRead* read = static_cast<AstRead*>(e);
+                    string input;
+                    cin >> input;
+                    if (read->read_integer()) {
+                        res_exp = AstInt::make(string_to_int(input));
+                    } else {
+                        res_exp = AstString::make(input);
+                    }
+                    break;
+                }
 
 		case AST_IDENTIFIER:
 		{

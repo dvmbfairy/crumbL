@@ -124,6 +124,14 @@ print {
     return TOKEN_PRINT;
 }
 
+readString {
+    return TOKEN_READSTRING;
+}
+
+readInt {
+    return TOKEN_READINT;
+}
+
 isnil {
     return TOKEN_ISNIL;
 }

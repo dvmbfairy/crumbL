@@ -36,6 +36,8 @@ TOKEN_WHILE
 TOKEN_DO
 TOKEN_OB
 TOKEN_PRINT
+TOKEN_READSTRING
+TOKEN_READINT
 TOKEN_FUNC
 TOKEN_IDENTIFIER
 TOKEN_COMMA
@@ -203,6 +205,16 @@ TOKEN_STRING
   string lexeme = GET_LEXEME($1);
     Expression* e = AstString::make(lexeme);
     $$ = e;
+}
+|
+TOKEN_READSTRING TOKEN_LPAREN TOKEN_RPAREN
+{
+  $$ = AstRead::make(false);
+}
+|
+TOKEN_READINT TOKEN_LPAREN TOKEN_RPAREN
+{
+  $$ = AstRead::make(true);
 }
 |
 TOKEN_IDENTIFIER
