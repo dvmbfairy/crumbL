@@ -1,8 +1,8 @@
 run make
 
-lexer:
-	./lexer test.L
-parser:
-	./parser test.L
-interpreter:
-	./crumbl-interpreter test.L
+To run the lexer tests:
+	make tl
+To run the parser tests:
+	make tp
+To run the interpeter tests:
+	make ti
