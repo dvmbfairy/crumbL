@@ -87,5 +87,3 @@ func recur(x)
   ret x + val;
 cnuf
 print(recur(4) + 2);
-
-print(-4);
