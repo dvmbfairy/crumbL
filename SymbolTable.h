@@ -14,12 +14,16 @@ using namespace std;
 class SymbolTable {
 private:
 	vector<map<AstIdentifier*, Expression*> > values;
+	vector<map<AstIdentifier*, Expression*> > lazy_values;
 public:
 	SymbolTable();
 	void push();
 	void pop();
 	void add(AstIdentifier* id, Expression* e);
-	Expression* find(AstIdentifier* id);
+	void add_lazy(AstIdentifier* id, Expression* e);
+	void remove(AstIdentifier* id);
+	void remove_lazy(AstIdentifier* id);
+	pair<Expression*, bool> find(AstIdentifier* id);
 	void print_contents();
 
 };
