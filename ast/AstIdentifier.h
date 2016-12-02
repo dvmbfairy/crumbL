@@ -12,11 +12,8 @@
     virtual string to_string(int d = 0);
     virtual string to_value();
     const string & get_id();
-	virtual Expression* substitute(Expression* e1,
-	        		  Expression* e2);
-	virtual bool operator==(const Expression& other);
-
-    
+  	virtual Expression* substitute(Expression* e1, Expression* e2);
+  	virtual bool operator==(const Expression& other);
  };
  
  

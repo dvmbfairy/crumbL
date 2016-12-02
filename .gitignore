@@ -1,6 +1,10 @@
 lexer
-lexer.yy.c
+lex.yy.c
+lexer_test/lex.yy.c
 *.o
 parser.tab.[ch]
 parser.output
 l-interpreter
+parser
+*.aux
+*.log
