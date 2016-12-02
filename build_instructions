@@ -1,0 +1,8 @@
+run make
+
+lexer:
+	./lexer test.L
+parser:
+	./parser test.L
+interpreter:
+	./crumbl-interpreter test.L
