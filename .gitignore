@@ -1,9 +1,2 @@
-lexer
-lex.yy.c
-lexer_test/lex.yy.c
-*.o
-parser.output
-crumbl-interpreter
-parser
 *.aux
 *.log
